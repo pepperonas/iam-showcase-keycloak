@@ -1,0 +1,13 @@
+# Lokale Entwicklung - Port-Mappings
+services:
+  keycloak:
+    ports:
+      - "8180:8080"
+
+  backend:
+    ports:
+      - "8080:8080"
+
+  frontend:
+    ports:
+      - "5173:80"

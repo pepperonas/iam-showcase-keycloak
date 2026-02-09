@@ -1,0 +1,9 @@
+logging:
+  level:
+    io.celox: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+spring:
+  jpa:
+    show-sql: true

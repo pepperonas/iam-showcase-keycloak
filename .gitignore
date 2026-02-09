@@ -1,0 +1,40 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Java / Maven
+backend/target/
+keycloak/extensions/target/
+*.class
+*.jar
+!keycloak/extensions/target/*.jar
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Docker
+docker/postgres-kc-data/
+docker/postgres-app-data/
+
+# Environment
+.env
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test / Coverage
+backend/coverage/
+frontend/coverage/
+*.exec

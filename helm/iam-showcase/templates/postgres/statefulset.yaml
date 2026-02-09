@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-keycloak
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: postgres-keycloak
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-keycloak
+  template:
+    metadata:
+      labels:
+        app: postgres-keycloak
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.postgresKeycloak.image }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresKeycloak.database }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-keycloak-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-keycloak-secret
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.postgresKeycloak.storage }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-app
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: postgres-app
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-app
+  template:
+    metadata:
+      labels:
+        app: postgres-app
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.postgresApp.image }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresApp.database }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-app-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-app-secret
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.postgresApp.storage }}

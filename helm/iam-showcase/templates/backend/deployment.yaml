@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: backend
+    {{- include "iam-showcase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: DB_HOST
+              value: postgres-app
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: {{ .Values.postgresApp.database }}
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-app-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-app-secret
+                  key: password
+            - name: KEYCLOAK_ISSUER_URI
+              value: https://{{ .Values.keycloak.hostname }}/realms/iam-showcase
+            - name: KEYCLOAK_JWK_URI
+              value: https://{{ .Values.keycloak.hostname }}/realms/iam-showcase/protocol/openid-connect/certs
+            - name: KEYCLOAK_ADMIN_URL
+              value: http://keycloak:8080
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/public/health
+              port: {{ .Values.backend.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/public/health
+              port: {{ .Values.backend.port }}
+            initialDelaySeconds: 40
+            periodSeconds: 30

@@ -1,0 +1,310 @@
+{
+  "id": "iam-showcase",
+  "realm": "iam-showcase",
+  "displayName": "IAM Showcase",
+  "displayNameHtml": "<strong>IAM Showcase</strong> by celox.io",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "passwordPolicy": "length(8) and upperCase(1) and digits(1)",
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyDigits": 6,
+  "otpPolicyPeriod": 30,
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyCodeReusable": false,
+  "otpSupportedApplications": [
+    "totpAppGoogleName",
+    "totpAppFreeOTPName",
+    "totpAppMicrosoftAuthenticatorName"
+  ],
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 300,
+  "ssoSessionIdleTimeout": 28800,
+  "ssoSessionMaxLifespan": 28800,
+  "offlineSessionIdleTimeout": 2592000,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "oauth2DeviceCodeLifespan": 600,
+  "oauth2DevicePollingInterval": 5,
+  "defaultSignatureAlgorithm": "RS256",
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Vollzugriff auf alle Funktionen",
+        "composite": false
+      },
+      {
+        "name": "manager",
+        "description": "Verwaltung von Benutzern und Ressourcen",
+        "composite": false
+      },
+      {
+        "name": "user",
+        "description": "Standard-Benutzerrolle",
+        "composite": false
+      },
+      {
+        "name": "viewer",
+        "description": "Nur-Lese-Zugriff",
+        "composite": false
+      }
+    ],
+    "client": {
+      "iam-backend": [
+        {
+          "name": "api-read",
+          "description": "Leserechte auf API-Ressourcen"
+        },
+        {
+          "name": "api-write",
+          "description": "Schreibrechte auf API-Ressourcen"
+        },
+        {
+          "name": "api-admin",
+          "description": "Administrative API-Rechte"
+        }
+      ]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "iam-frontend",
+      "name": "IAM Showcase Frontend",
+      "description": "React SPA mit OIDC/PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
+      "rootUrl": "http://localhost:5173",
+      "baseUrl": "http://localhost:5173",
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "https://iam-demo.celox.io/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "https://iam-demo.celox.io"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*##https://iam-demo.celox.io/*"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "iam-backend",
+      "name": "IAM Showcase Backend",
+      "description": "Spring Boot Resource Server",
+      "enabled": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "secret": "backend-secret-change-in-prod",
+      "attributes": {
+        "use.refresh.tokens": "true"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ]
+    },
+    {
+      "clientId": "iam-saml-client",
+      "name": "IAM SAML Demo Client",
+      "description": "SAML 2.0 Konzept-Demo",
+      "enabled": true,
+      "protocol": "saml",
+      "frontchannelLogout": true,
+      "attributes": {
+        "saml.assertion.signature": "true",
+        "saml.server.signature": "true",
+        "saml.client.signature": "false",
+        "saml.signature.algorithm": "RSA_SHA256",
+        "saml_force_name_id_format": "false",
+        "saml_name_id_format": "username",
+        "saml.authnstatement": "true",
+        "saml_single_logout_service_url_redirect": "http://localhost:8080/api/v1/saml/slo",
+        "saml_assertion_consumer_url_post": "http://localhost:8080/api/v1/saml/acs"
+      },
+      "redirectUris": [
+        "http://localhost:8080/api/v1/saml/*"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@demo.celox.io",
+      "email": "admin@demo.celox.io",
+      "firstName": "Admin",
+      "lastName": "Demo",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin",
+        "default-roles-iam-showcase"
+      ],
+      "clientRoles": {
+        "iam-backend": [
+          "api-admin",
+          "api-write",
+          "api-read"
+        ]
+      }
+    },
+    {
+      "username": "manager@demo.celox.io",
+      "email": "manager@demo.celox.io",
+      "firstName": "Manager",
+      "lastName": "Demo",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Manager123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "manager",
+        "default-roles-iam-showcase"
+      ],
+      "clientRoles": {
+        "iam-backend": [
+          "api-write",
+          "api-read"
+        ]
+      }
+    },
+    {
+      "username": "user@demo.celox.io",
+      "email": "user@demo.celox.io",
+      "firstName": "User",
+      "lastName": "Demo",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "User1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user",
+        "default-roles-iam-showcase"
+      ],
+      "clientRoles": {
+        "iam-backend": [
+          "api-read"
+        ]
+      }
+    },
+    {
+      "username": "viewer@demo.celox.io",
+      "email": "viewer@demo.celox.io",
+      "firstName": "Viewer",
+      "lastName": "Demo",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Viewer123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "viewer",
+        "default-roles-iam-showcase"
+      ],
+      "clientRoles": {
+        "iam-backend": []
+      }
+    }
+  ],
+  "eventsEnabled": true,
+  "eventsListeners": [
+    "jboss-logging",
+    "celox-audit-listener"
+  ],
+  "enabledEventTypes": [
+    "LOGIN",
+    "LOGIN_ERROR",
+    "LOGOUT",
+    "LOGOUT_ERROR",
+    "REGISTER",
+    "REGISTER_ERROR",
+    "CODE_TO_TOKEN",
+    "CODE_TO_TOKEN_ERROR",
+    "CLIENT_LOGIN",
+    "CLIENT_LOGIN_ERROR",
+    "REFRESH_TOKEN",
+    "REFRESH_TOKEN_ERROR",
+    "IMPERSONATE",
+    "UPDATE_PROFILE",
+    "UPDATE_PASSWORD",
+    "SEND_RESET_PASSWORD",
+    "RESET_PASSWORD"
+  ],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
+  "smtpServer": {},
+  "loginTheme": "celox",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "de",
+    "en"
+  ],
+  "defaultLocale": "de",
+  "browserFlow": "browser",
+  "registrationFlow": "registration",
+  "directGrantFlow": "direct grant",
+  "resetCredentialsFlow": "reset credentials",
+  "clientAuthenticationFlow": "clients"
+}

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: keycloak
+    {{- include "iam-showcase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.keycloak.replicas }}
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: {{ .Values.keycloak.image }}
+          args:
+            - start
+            - --optimized
+            - --hostname={{ .Values.keycloak.hostname }}
+            - --proxy=edge
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres-keycloak:5432/{{ .Values.postgresKeycloak.database }}
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-keycloak-secret
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-keycloak-secret
+                  key: password
+            - name: KEYCLOAK_ADMIN
+              value: {{ .Values.keycloak.adminUser }}
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin-password
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+          resources:
+            {{- toYaml .Values.keycloak.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30

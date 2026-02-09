@@ -1,0 +1,12 @@
+logging:
+  level:
+    io.celox: INFO
+    org.springframework.security: WARN
+
+spring:
+  jpa:
+    show-sql: false
+
+server:
+  error:
+    include-message: never

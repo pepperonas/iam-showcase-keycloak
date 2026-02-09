@@ -1,0 +1,16 @@
+apiVersion: v2
+name: iam-showcase
+description: IAM Showcase - Keycloak SSO, OAuth2/OIDC, SAML2, RBAC, 2FA
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Martin Pfeffer
+    url: https://celox.io
+keywords:
+  - keycloak
+  - iam
+  - oauth2
+  - oidc
+  - saml
+  - rbac

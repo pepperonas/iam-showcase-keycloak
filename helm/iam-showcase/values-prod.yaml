@@ -1,0 +1,28 @@
+# Produktions-Overrides
+keycloak:
+  replicas: 2
+  adminPassword: ""  # Aus Secret beziehen
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1024Mi
+    limits:
+      cpu: 2000m
+      memory: 2048Mi
+
+backend:
+  replicas: 3
+  hpa:
+    minReplicas: 3
+    maxReplicas: 10
+
+frontend:
+  replicas: 2
+
+postgresKeycloak:
+  storage: 20Gi
+  password: ""  # Aus Secret beziehen
+
+postgresApp:
+  storage: 10Gi
+  password: ""  # Aus Secret beziehen

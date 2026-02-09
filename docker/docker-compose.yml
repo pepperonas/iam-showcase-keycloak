@@ -1,0 +1,111 @@
+services:
+  postgres-keycloak:
+    image: postgres:16-alpine
+    container_name: iam-postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${KC_DB_USERNAME:-keycloak}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+    volumes:
+      - postgres-kc-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME:-keycloak} -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - iam-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: iam-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: ${KC_DB_USERNAME:-keycloak}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - ../keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+      - ../keycloak/themes/celox:/opt/keycloak/themes/celox:ro
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200\\|UP'"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      - iam-network
+
+  postgres-app:
+    image: postgres:16-alpine
+    container_name: iam-postgres-app
+    environment:
+      POSTGRES_DB: ${APP_DB_NAME:-iam_showcase}
+      POSTGRES_USER: ${APP_DB_USERNAME:-iam_app}
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD:-iam_app}
+    volumes:
+      - postgres-app-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${APP_DB_USERNAME:-iam_app} -d ${APP_DB_NAME:-iam_showcase}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - iam-network
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: iam-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres-app
+      DB_PORT: 5432
+      DB_NAME: ${APP_DB_NAME:-iam_showcase}
+      SPRING_DATASOURCE_USERNAME: ${APP_DB_USERNAME:-iam_app}
+      SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD:-iam_app}
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/iam-showcase
+      KEYCLOAK_JWK_URI: http://keycloak:8080/realms/iam-showcase/protocol/openid-connect/certs
+      KEYCLOAK_ADMIN_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN_CLIENT_SECRET: backend-secret-change-in-prod
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      postgres-app:
+        condition: service_healthy
+    networks:
+      - iam-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_KEYCLOAK_URL: http://localhost:8180
+        VITE_KEYCLOAK_REALM: iam-showcase
+        VITE_KEYCLOAK_CLIENT_ID: iam-frontend
+        VITE_API_BASE_URL: http://localhost:8080/api/v1
+    container_name: iam-frontend
+    depends_on:
+      - backend
+    networks:
+      - iam-network
+
+networks:
+  iam-network:
+    driver: bridge
+
+volumes:
+  postgres-kc-data:
+  postgres-app-data:

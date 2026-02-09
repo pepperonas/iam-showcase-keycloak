@@ -1,0 +1,62 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: iam-showcase
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:iam_showcase}
+    username: ${SPRING_DATASOURCE_USERNAME:iam_app}
+    password: ${SPRING_DATASOURCE_PASSWORD:iam_app}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8180/realms/iam-showcase}
+          jwk-set-uri: ${KEYCLOAK_JWK_URI:http://localhost:8180/realms/iam-showcase/protocol/openid-connect/certs}
+
+app:
+  version: 1.0.0
+  cors:
+    allowed-origins: http://localhost:5173,https://iam-demo.celox.io
+  keycloak:
+    admin-url: ${KEYCLOAK_ADMIN_URL:http://localhost:8180}
+    realm: iam-showcase
+    client-id: iam-backend
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:backend-secret-change-in-prod}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    oauth:
+      client-id: iam-frontend
+      use-pkce-with-authorization-code-grant: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    io.celox: DEBUG
+    org.springframework.security: INFO

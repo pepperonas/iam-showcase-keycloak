@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-keycloak
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: postgres-keycloak
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-app
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: postgres-app
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
