@@ -28,15 +28,15 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-gray-900 text-white min-h-screen flex flex-col">
-      <div className="p-4 border-b border-gray-700">
+    <aside className="w-64 bg-surface-container-low min-h-screen flex flex-col border-r border-outline-variant">
+      <div className="p-4 border-b border-outline-variant">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-10 h-10 bg-md-primary-container rounded-lg flex items-center justify-center text-on-primary-container font-medium text-label-lg">
             IAM
           </div>
           <div>
-            <div className="text-sm font-semibold">IAM Showcase</div>
-            <div className="text-xs text-gray-400">Keycloak Demo</div>
+            <div className="text-title-sm text-on-surface">IAM Showcase</div>
+            <div className="text-label-sm text-on-surface-variant">Keycloak Demo</div>
           </div>
         </div>
       </div>
@@ -49,10 +49,10 @@ export function Sidebar() {
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  className={`block px-3 py-2 rounded-md text-sm transition ${
+                  className={`block px-4 py-2.5 rounded-full text-label-lg transition-all duration-md3-short ease-md3-standard ${
                     isActive
-                      ? 'bg-primary-500 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? 'bg-secondary-container text-on-secondary-container font-medium'
+                      : 'text-on-surface-variant hover:bg-on-surface/[0.08]'
                   }`}
                 >
                   {item.label}
@@ -63,7 +63,7 @@ export function Sidebar() {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-700 text-xs text-gray-500">
+      <div className="p-4 border-t border-outline-variant text-label-sm text-on-surface-variant">
         Keycloak 24 | Spring Boot 3.3 | React 18
       </div>
     </aside>

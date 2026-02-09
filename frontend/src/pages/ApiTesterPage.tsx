@@ -50,16 +50,18 @@ export function ApiTesterPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">API Tester</h2>
+      <h2 className="text-headline-sm text-on-surface">API Tester</h2>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="card-elevated p-6">
         <div className="flex gap-4 items-end">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint</label>
+            <label className="block text-label-md text-on-surface-variant mb-1">Endpoint</label>
             <select
               value={selectedEndpoint}
               onChange={(e) => setSelectedEndpoint(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2.5 border border-outline-variant rounded-xs bg-surface text-body-lg text-on-surface
+                         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+                         transition-colors duration-md3-short"
             >
               {API_ENDPOINTS.map((ep, i) => (
                 <option key={i} value={i}>
@@ -71,22 +73,22 @@ export function ApiTesterPage() {
           <button
             onClick={executeRequest}
             disabled={loading}
-            className="px-6 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 disabled:opacity-50 transition"
+            className="btn-filled"
           >
             {loading ? 'Sende...' : 'Senden'}
           </button>
         </div>
 
-        <div className="mt-3 flex gap-4 text-sm text-gray-500">
-          <span>Methode: <span className={`font-bold ${endpoint.method === 'GET' ? 'text-green-600' : endpoint.method === 'DELETE' ? 'text-red-600' : 'text-amber-600'}`}>{endpoint.method}</span></span>
-          <span>Rolle: <span className="font-medium">{endpoint.requiredRole || 'oeffentlich'}</span></span>
+        <div className="mt-3 flex gap-4 text-body-sm text-on-surface-variant">
+          <span>Methode: <span className={`font-medium ${endpoint.method === 'GET' ? 'text-green-600' : endpoint.method === 'DELETE' ? 'text-red-600' : 'text-amber-600'}`}>{endpoint.method}</span></span>
+          <span>Rolle: <span className="font-medium text-on-surface">{endpoint.requiredRole || 'oeffentlich'}</span></span>
         </div>
       </div>
 
       {/* Request */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">Request</h3>
-        <pre className="bg-gray-900 text-gray-300 p-4 rounded-lg text-sm font-mono overflow-auto">
+      <div className="card-elevated p-6">
+        <h3 className="text-title-lg text-on-surface mb-3">Request</h3>
+        <pre className="bg-secondary-800 text-gray-300 p-4 rounded-md text-body-sm font-mono overflow-auto">
 {`${endpoint.method} ${endpoint.path}
 Host: localhost:8080
 ${endpoint.requiredRole ? `Authorization: Bearer <token>` : '(kein Token erforderlich)'}
@@ -96,21 +98,21 @@ Content-Type: application/json`}
 
       {/* Response */}
       {(response || error) && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="card-elevated p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-gray-700">Response</h3>
+            <h3 className="text-title-lg text-on-surface">Response</h3>
             {response && (
-              <div className="flex gap-3 text-sm">
-                <span className={`px-2 py-1 rounded font-bold ${response.status < 300 ? 'bg-green-100 text-green-800' : response.status < 500 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`}>
+              <div className="flex gap-3 items-center">
+                <span className={`px-2.5 py-0.5 rounded-full text-label-md font-medium border ${response.status < 300 ? 'bg-green-50 text-green-700 border-green-200' : response.status < 500 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                   {response.status}
                 </span>
-                <span className="text-gray-500">{response.time}ms</span>
+                <span className="text-body-sm text-on-surface-variant">{response.time}ms</span>
               </div>
             )}
           </div>
-          {error && <div className="text-red-600 text-sm">{error}</div>}
+          {error && <div className="text-md-error text-body-md">{error}</div>}
           {response && (
-            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-sm font-mono overflow-auto max-h-96">
+            <pre className="bg-secondary-800 text-green-400 p-4 rounded-md text-body-sm font-mono overflow-auto max-h-96">
               {JSON.stringify(response.data, null, 2)}
             </pre>
           )}

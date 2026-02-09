@@ -7,28 +7,28 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+      <h2 className="text-headline-sm text-on-surface">Dashboard</h2>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Willkommen, {auth.username}</h3>
+      <div className="card-elevated p-6">
+        <h3 className="text-title-lg text-on-surface mb-4">Willkommen, {auth.username}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="text-sm text-blue-600 font-medium">Angemeldet als</div>
-            <div className="text-lg font-bold text-blue-900">{auth.email}</div>
+          <div className="bg-primary-50 rounded-md p-4">
+            <div className="text-label-md text-primary-600">Angemeldet als</div>
+            <div className="text-title-md text-primary-800 mt-1">{auth.email}</div>
           </div>
-          <div className="bg-green-50 rounded-lg p-4">
-            <div className="text-sm text-green-600 font-medium">Aktive Rollen</div>
-            <div className="text-lg font-bold text-green-900">{roles.length}</div>
+          <div className="bg-green-50 rounded-md p-4">
+            <div className="text-label-md text-green-600">Aktive Rollen</div>
+            <div className="text-title-md text-green-800 mt-1">{roles.length}</div>
           </div>
-          <div className="bg-purple-50 rounded-lg p-4">
-            <div className="text-sm text-purple-600 font-medium">Auth-Methode</div>
-            <div className="text-lg font-bold text-purple-900">OIDC / PKCE</div>
+          <div className="bg-purple-50 rounded-md p-4">
+            <div className="text-label-md text-purple-600">Auth-Methode</div>
+            <div className="text-title-md text-purple-800 mt-1">OIDC / PKCE</div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">Ihre Rollen</h3>
+      <div className="card-elevated p-6">
+        <h3 className="text-title-lg text-on-surface mb-3">Ihre Rollen</h3>
         <div className="flex flex-wrap gap-2">
           {roles.map((role) => (
             <RoleBadge key={role} role={role} />
@@ -36,8 +36,8 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">Showcase Features</h3>
+      <div className="card-elevated p-6">
+        <h3 className="text-title-lg text-on-surface mb-3">Showcase Features</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { title: 'Token Inspector', desc: 'JWT Token decodiert anzeigen', path: '/token-inspector' },
@@ -49,10 +49,10 @@ export function DashboardPage() {
             <a
               key={feature.path}
               href={feature.path}
-              className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition"
+              className="card-outlined p-4 block hover:shadow-elevation-1 transition-shadow duration-md3-short ease-md3-standard"
             >
-              <div className="font-medium text-gray-800">{feature.title}</div>
-              <div className="text-sm text-gray-500 mt-1">{feature.desc}</div>
+              <div className="text-title-sm text-on-surface">{feature.title}</div>
+              <div className="text-body-sm text-on-surface-variant mt-1">{feature.desc}</div>
             </a>
           ))}
         </div>

@@ -17,14 +17,28 @@ vi.mock('react-oidc-context', () => ({
 import App from '../App'
 
 describe('App', () => {
-  it('zeigt Anmelde-Aufforderung wenn nicht authentifiziert', () => {
+  it('leitet zur Login-Seite weiter wenn nicht authentifiziert', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/']}>
         <App />
       </MemoryRouter>
     )
 
-    expect(screen.getByText('Anmeldung erforderlich')).toBeInTheDocument()
-    expect(screen.getByText('Anmelden')).toBeInTheDocument()
+    expect(screen.getByText('Identity & Access Management')).toBeInTheDocument()
+    expect(screen.getByText('Mit Keycloak anmelden')).toBeInTheDocument()
+  })
+
+  it('zeigt Login-Seite mit Demo-Zugangsdaten', () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <App />
+      </MemoryRouter>
+    )
+
+    expect(screen.getByText('Demo-Zugangsdaten')).toBeInTheDocument()
+    expect(screen.getByText('Admin')).toBeInTheDocument()
+    expect(screen.getByText('Manager')).toBeInTheDocument()
+    expect(screen.getByText('User')).toBeInTheDocument()
+    expect(screen.getByText('Viewer')).toBeInTheDocument()
   })
 })

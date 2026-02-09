@@ -4,6 +4,7 @@ import { useAuth } from './auth/useAuth'
 import { setAuthToken } from './api/axiosInstance'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import { MainLayout } from './components/layout/MainLayout'
+import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { TokenInspectorPage } from './pages/TokenInspectorPage'
 import { ApiTesterPage } from './pages/ApiTesterPage'
@@ -24,6 +25,7 @@ export default function App() {
 
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route
         element={
           <ProtectedRoute>

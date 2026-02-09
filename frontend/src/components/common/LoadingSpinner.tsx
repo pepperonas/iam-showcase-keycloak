@@ -1,7 +1,9 @@
 export function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center p-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
+      <svg className="md3-spinner" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="18" fill="none" strokeWidth="4" />
+      </svg>
     </div>
   )
 }

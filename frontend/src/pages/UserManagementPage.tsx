@@ -50,36 +50,36 @@ export function UserManagementPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+        <h2 className="text-headline-sm text-on-surface">User Management</h2>
         {canWrite && (
-          <button className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition text-sm">
+          <button className="btn-filled">
             Neuer Benutzer
           </button>
         )}
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">{error}</div>
+        <div className="card-outlined p-4 border-red-200 bg-red-50 text-md-error text-body-md">{error}</div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="card-elevated overflow-hidden">
+        <table className="min-w-full divide-y divide-outline-variant">
+          <thead className="bg-surface-container">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rollen</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              {canDelete && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aktionen</th>}
+              <th className="px-6 py-3 text-left text-label-md text-on-surface-variant">Username</th>
+              <th className="px-6 py-3 text-left text-label-md text-on-surface-variant">Email</th>
+              <th className="px-6 py-3 text-left text-label-md text-on-surface-variant">Name</th>
+              <th className="px-6 py-3 text-left text-label-md text-on-surface-variant">Rollen</th>
+              <th className="px-6 py-3 text-left text-label-md text-on-surface-variant">Status</th>
+              {canDelete && <th className="px-6 py-3 text-right text-label-md text-on-surface-variant">Aktionen</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-outline-variant">
             {users?.content.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.username}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{user.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{user.firstName} {user.lastName}</td>
+              <tr key={user.id} className="hover:bg-on-surface/[0.04] transition-colors duration-md3-short">
+                <td className="px-6 py-4 text-body-md font-medium text-on-surface">{user.username}</td>
+                <td className="px-6 py-4 text-body-md text-on-surface-variant">{user.email}</td>
+                <td className="px-6 py-4 text-body-md text-on-surface-variant">{user.firstName} {user.lastName}</td>
                 <td className="px-6 py-4">
                   <div className="flex flex-wrap gap-1">
                     {[...user.realmRoles, ...user.clientRoles].map((role) => (
@@ -88,7 +88,7 @@ export function UserManagementPage() {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${user.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  <span className={`px-2.5 py-0.5 text-label-sm rounded-full border font-medium ${user.enabled ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                     {user.enabled ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
@@ -96,7 +96,7 @@ export function UserManagementPage() {
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => handleDelete(user.id)}
-                      className="text-red-600 hover:text-red-800 text-sm"
+                      className="btn-text text-md-error text-label-md px-3 py-1"
                     >
                       Loeschen
                     </button>
@@ -107,7 +107,7 @@ export function UserManagementPage() {
           </tbody>
         </table>
         {users && (
-          <div className="px-6 py-3 bg-gray-50 text-sm text-gray-500">
+          <div className="px-6 py-3 bg-surface-container text-body-sm text-on-surface-variant">
             Seite {users.page + 1} von {users.totalPages} ({users.totalElements} Benutzer gesamt)
           </div>
         )}
