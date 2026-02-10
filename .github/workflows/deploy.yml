@@ -22,7 +22,8 @@ jobs:
           command_timeout: 10m
           script: |
             cd /opt/iam-showcase-keycloak
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml build --no-cache frontend backend
             docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
             echo "Waiting for backend to start..."
