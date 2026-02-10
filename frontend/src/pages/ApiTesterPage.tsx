@@ -73,19 +73,16 @@ export function ApiTesterPage() {
       const start = Date.now()
 
       try {
-        // Fuer Batch-Test: DELETE/POST als GET ausfuehren, Pfad-Variablen entfernen
-        let path = ep.path.replace('/api/v1', '')
-        const isMutating = ep.method === 'DELETE' || ep.method === 'POST' || ep.method === 'PUT'
-        if (isMutating) {
-          path = path.replace(/\/\{[^}]+\}/, '')
-        }
+        // Echte HTTP-Methode verwenden, damit Berechtigungspruefung korrekt ist.
+        // Pfad-Variablen durch eine nicht-existierende UUID ersetzen (loest 404 aus, nicht 500).
+        const path = ep.path.replace('/api/v1', '').replace('{id}', '00000000-0000-0000-0000-000000000000')
         const url = apiBaseUrl + path
         const headers: Record<string, string> = { 'Content-Type': 'application/json' }
         if (auth.accessToken && ep.requiredRole) {
           headers['Authorization'] = `Bearer ${auth.accessToken}`
         }
 
-        const res = await axios({ method: isMutating ? 'get' : ep.method.toLowerCase(), url, headers })
+        const res = await axios({ method: ep.method.toLowerCase(), url, headers, data: ep.method === 'POST' ? {} : undefined })
         setBatchResults(prev => ({ ...prev, [i]: { status: res.status, time: Date.now() - start, loading: false } }))
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response) {
@@ -109,16 +106,20 @@ export function ApiTesterPage() {
     if (status >= 200 && status < 300) return 'bg-green-500 text-white'
     if (status === 401) return 'bg-amber-500 text-white'
     if (status === 403) return 'bg-red-500 text-white'
+    // 400/404/405 = Berechtigung ok, nur Request ungueltig (z.B. leerer Body, nicht-existierende ID)
+    if (status === 400 || status === 404 || status === 405) return 'bg-green-500 text-white'
     if (status >= 400 && status < 500) return 'bg-amber-500 text-white'
-    return 'bg-red-700 text-white'
+    if (status >= 500) return 'bg-red-700 text-white'
+    return 'bg-surface-container-highest text-on-surface-variant'
   }
 
   const getStatusLabel = (status: number | null) => {
     if (status === null) return '...'
     if (status >= 200 && status < 300) return `${status} OK`
-    if (status === 401) return '401 Unauthorized'
+    if (status === 401) return '401 Unauth.'
     if (status === 403) return '403 Forbidden'
-    if (status === 404) return '404 Not Found'
+    // Im Batch-Test zeigen 400/404/405 dass die Berechtigung da ist
+    if (status === 400 || status === 404 || status === 405) return `${status} Erlaubt`
     return `${status}`
   }
 
