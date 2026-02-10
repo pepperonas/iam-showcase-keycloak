@@ -25,7 +25,7 @@ class KeycloakJwtConverterTest {
     @Test
     void shouldExtractRealmRoles() {
         Jwt jwt = buildJwt(
-                Map.of("realm_access", Map.of("roles", List.of("admin", "user"))),
+                Map.of("roles", List.of("admin", "user")),
                 null
         );
 
@@ -55,7 +55,7 @@ class KeycloakJwtConverterTest {
     @Test
     void shouldCombineRealmAndClientRoles() {
         Jwt jwt = buildJwt(
-                Map.of("realm_access", Map.of("roles", List.of("admin"))),
+                Map.of("roles", List.of("admin")),
                 Map.of("iam-backend", Map.of("roles", List.of("api-admin")))
         );
 

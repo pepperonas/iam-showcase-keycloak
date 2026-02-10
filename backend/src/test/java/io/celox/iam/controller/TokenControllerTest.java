@@ -41,6 +41,7 @@ class TokenControllerTest {
     void shouldReturnPermissions() throws Exception {
         mockMvc.perform(get("/api/v1/token/permissions")
                 .with(jwt().jwt(builder -> builder
+                        .subject("user@demo.celox.io")
                         .claim("preferred_username", "user@demo.celox.io")
                         .claim("realm_access", Map.of("roles", List.of("user")))
                         .claim("resource_access", Map.of("iam-backend", Map.of("roles", List.of("api-read")))))))

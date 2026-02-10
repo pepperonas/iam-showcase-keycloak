@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +90,12 @@ class SecurityRbacTest {
         return jwt().jwt(builder -> builder
                 .claim("preferred_username", "admin@demo.celox.io")
                 .claim("realm_access", Map.of("roles", List.of("admin")))
-                .claim("resource_access", Map.of("iam-backend", Map.of("roles", List.of("api-admin", "api-write", "api-read")))));
+                .claim("resource_access", Map.of("iam-backend", Map.of("roles", List.of("api-admin", "api-write", "api-read")))))
+                .authorities(
+                        new SimpleGrantedAuthority("ROLE_admin"),
+                        new SimpleGrantedAuthority("ROLE_api-admin"),
+                        new SimpleGrantedAuthority("ROLE_api-write"),
+                        new SimpleGrantedAuthority("ROLE_api-read")
+                );
     }
 }

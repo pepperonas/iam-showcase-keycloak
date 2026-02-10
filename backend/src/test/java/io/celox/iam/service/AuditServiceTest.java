@@ -4,10 +4,9 @@ import io.celox.iam.dto.AuditLogDto;
 import io.celox.iam.dto.PagedResponse;
 import io.celox.iam.model.AuditLog;
 import io.celox.iam.repository.AuditLogRepository;
-import org.easymock.EasyMock;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
-import org.easymock.TestSubject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.domain.PageImpl;
@@ -29,8 +28,12 @@ class AuditServiceTest {
     @Mock
     private AuditLogRepository auditLogRepository;
 
-    @TestSubject
-    private AuditService auditService = new AuditService(null);
+    private AuditService auditService;
+
+    @BeforeEach
+    void setUp() {
+        auditService = new AuditService(auditLogRepository);
+    }
 
     @Test
     void shouldSaveAuditLog() {
