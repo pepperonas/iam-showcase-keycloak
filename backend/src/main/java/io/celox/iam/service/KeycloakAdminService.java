@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,12 +89,17 @@ public class KeycloakAdminService {
     public UserDto getUserById(String userId) {
         String token = getAdminToken();
 
-        Map<String, Object> user = webClient.get()
-                .uri("/admin/realms/{realm}/users/{id}", realm, userId)
-                .header("Authorization", "Bearer " + token)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                .block();
+        Map<String, Object> user;
+        try {
+            user = webClient.get()
+                    .uri("/admin/realms/{realm}/users/{id}", realm, userId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            throw new IllegalArgumentException("User nicht gefunden: " + userId);
+        }
 
         if (user == null) {
             throw new IllegalArgumentException("User nicht gefunden: " + userId);
@@ -132,14 +138,18 @@ public class KeycloakAdminService {
                 "temporary", false
         )));
 
-        webClient.post()
-                .uri("/admin/realms/{realm}/users", realm)
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userRep)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webClient.post()
+                    .uri("/admin/realms/{realm}/users", realm)
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(userRep)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException.Conflict e) {
+            throw new IllegalArgumentException("Benutzer existiert bereits: " + dto.username());
+        }
 
         // Neuen User ueber Username finden
         List<Map<String, Object>> users = webClient.get()
@@ -203,12 +213,16 @@ public class KeycloakAdminService {
     public void deleteUser(String userId) {
         String token = getAdminToken();
 
-        webClient.delete()
-                .uri("/admin/realms/{realm}/users/{id}", realm, userId)
-                .header("Authorization", "Bearer " + token)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webClient.delete()
+                    .uri("/admin/realms/{realm}/users/{id}", realm, userId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            throw new IllegalArgumentException("User nicht gefunden: " + userId);
+        }
     }
 
     public List<RoleDto> getRealmRoles() {
