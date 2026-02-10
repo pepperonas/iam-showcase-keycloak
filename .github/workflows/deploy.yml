@@ -19,9 +19,20 @@ jobs:
           host: 69.62.121.168
           username: root
           password: ${{ secrets.VPS_PASSWORD }}
+          command_timeout: 10m
           script: |
             cd /opt/iam-showcase-keycloak
             git pull origin main
             docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d --build
-            sleep 30
-            curl -f http://localhost:8080/api/v1/public/health || exit 1
+            echo "Waiting for backend to start..."
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:8080/api/v1/public/health > /dev/null 2>&1; then
+                echo "Health check passed!"
+                exit 0
+              fi
+              echo "Attempt $i/12 - waiting 10s..."
+              sleep 10
+            done
+            echo "Health check failed after 120s, checking logs..."
+            docker logs iam-backend --tail 50
+            exit 1
