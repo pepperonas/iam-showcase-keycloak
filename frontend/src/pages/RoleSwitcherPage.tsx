@@ -10,7 +10,7 @@ export function RoleSwitcherPage() {
   const switchUser = (username: string) => {
     // Logout und dann mit login_hint fuer den neuen User re-login
     const logoutUrl = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/logout`
-    const redirectUri = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/auth?client_id=iam-frontend&redirect_uri=${encodeURIComponent(window.location.origin + '/')}&response_type=code&scope=openid+profile+email&login_hint=${encodeURIComponent(username)}`
+    const redirectUri = `${window.location.origin}/login?hint=${encodeURIComponent(username)}`
 
     window.location.href = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(redirectUri)}&client_id=iam-frontend`
   }

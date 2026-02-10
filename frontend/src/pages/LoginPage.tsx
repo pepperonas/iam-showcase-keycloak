@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { DEMO_USERS } from '../types/auth'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 
 const TECH_STACK = [
   'Keycloak 24', 'Spring Boot 3.3', 'Java 21', 'React 18',
@@ -9,6 +10,15 @@ const TECH_STACK = [
 
 export function LoginPage() {
   const auth = useAuth()
+  const [searchParams] = useSearchParams()
+  const hint = searchParams.get('hint')
+
+  // Auto-login bei Role Switcher Redirect
+  useEffect(() => {
+    if (hint && !auth.isAuthenticated && !auth.isLoading) {
+      auth.signinRedirect({ login_hint: hint })
+    }
+  }, [hint, auth.isAuthenticated, auth.isLoading])
 
   if (auth.isAuthenticated) {
     return <Navigate to="/" replace />
