@@ -1,50 +1,269 @@
-/* Celox.io Keycloak Login Theme */
+/* Celox.io Keycloak Login Theme - Material Design 3 */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-    --celox-primary: #1a73e8;
-    --celox-primary-dark: #1557b0;
-    --celox-bg: #f5f7fa;
-    --celox-surface: #ffffff;
-    --celox-text: #202124;
-    --celox-text-secondary: #5f6368;
+    --md-primary: #1a73e8;
+    --md-primary-dark: #1557b0;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #d3e3fd;
+    --md-surface: #fef7ff;
+    --md-surface-container: #f3edf7;
+    --md-surface-container-low: #f7f2fa;
+    --md-on-surface: #1d1b20;
+    --md-on-surface-variant: #49454f;
+    --md-outline: #79747e;
+    --md-outline-variant: #cac4d0;
+    --md-error: #b3261e;
 }
 
+/* === Global === */
+body, .login-pf body {
+    background: var(--md-surface) !important;
+    font-family: 'Roboto', sans-serif !important;
+    color: var(--md-on-surface);
+}
+
+/* === Header === */
 #kc-header-wrapper {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--celox-primary);
-    padding-bottom: 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--md-primary);
+    padding: 1.5rem 0 1rem;
+    letter-spacing: 0;
 }
 
-.login-pf body {
-    background: var(--celox-bg);
+/* === Language Selector - FIX: nicht den Login verdecken === */
+#kc-locale {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10;
 }
 
-#kc-login {
-    background: var(--celox-surface);
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+#kc-locale ul {
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    padding: 0.25rem 0;
+    min-width: 120px;
 }
 
-.btn-primary {
-    background-color: var(--celox-primary) !important;
-    border-color: var(--celox-primary) !important;
-    border-radius: 4px;
+#kc-locale ul li a {
+    color: var(--md-on-surface);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-family: 'Roboto', sans-serif;
+    display: block;
+    text-decoration: none;
+    border-radius: 0;
+}
+
+#kc-locale ul li a:hover {
+    background: rgba(29, 27, 32, 0.08);
+}
+
+#kc-locale-dropdown {
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: 100px;
+    padding: 0.375rem 1rem;
+    font-size: 0.8125rem;
+    font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    transition: background-color 0.2s;
+    color: var(--md-on-surface-variant);
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.btn-primary:hover {
-    background-color: var(--celox-primary-dark) !important;
-    border-color: var(--celox-primary-dark) !important;
+#kc-locale-dropdown:hover {
+    background: rgba(29, 27, 32, 0.08);
 }
 
+/* === Login Card === */
+#kc-login,
+.card-pf,
+#kc-form-wrapper {
+    position: relative;
+}
+
+#kc-content-wrapper {
+    background: var(--md-surface-container-low);
+    border-radius: 28px;
+    box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    padding: 2rem 2.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* === Input Fields - MD3 Outlined === */
+.login-pf input[type="text"],
+.login-pf input[type="password"],
+.login-pf input[type="email"],
+#kc-form input[type="text"],
+#kc-form input[type="password"],
+#kc-form input[type="email"] {
+    background: transparent;
+    border: 1px solid var(--md-outline);
+    border-radius: 4px;
+    padding: 1rem 0.875rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    color: var(--md-on-surface);
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.login-pf input[type="text"]:focus,
+.login-pf input[type="password"]:focus,
+.login-pf input[type="email"]:focus,
+#kc-form input[type="text"]:focus,
+#kc-form input[type="password"]:focus,
+#kc-form input[type="email"]:focus {
+    border-color: var(--md-primary);
+    border-width: 2px;
+    padding: calc(1rem - 1px) calc(0.875rem - 1px);
+}
+
+/* === Labels === */
+.login-pf label,
+#kc-form label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--md-on-surface-variant);
+    margin-bottom: 0.25rem;
+}
+
+/* === Primary Button - MD3 Filled === */
+.btn-primary,
+input[type="submit"].btn-primary {
+    background-color: var(--md-primary) !important;
+    border: none !important;
+    border-radius: 100px !important;
+    padding: 0.625rem 1.5rem !important;
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.1px;
+    color: var(--md-on-primary) !important;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background-color 0.2s;
+    width: 100%;
+    min-height: 40px;
+}
+
+.btn-primary:hover,
+input[type="submit"].btn-primary:hover {
+    background-color: var(--md-primary-dark) !important;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:active,
+input[type="submit"].btn-primary:active {
+    box-shadow: none;
+}
+
+/* === Secondary/Text Buttons === */
+.btn-default,
+a.btn-default {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 100px;
+    padding: 0.625rem 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-primary) !important;
+    cursor: pointer;
+}
+
+.btn-default:hover,
+a.btn-default:hover {
+    background: var(--md-primary-container) !important;
+}
+
+/* === Links === */
+#kc-form a,
+#kc-registration a,
+.login-pf a {
+    color: var(--md-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+#kc-form a:hover,
+#kc-registration a:hover,
+.login-pf a:hover {
+    text-decoration: underline;
+}
+
+/* === Form Sections === */
 #kc-form-options,
 #kc-form-buttons {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
 }
 
+/* === Checkbox - Remember Me === */
+#kc-form-options .checkbox label {
+    font-size: 0.875rem;
+    color: var(--md-on-surface-variant);
+}
+
+/* === Alerts === */
+.alert {
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    border: none;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fce8e6;
+    color: var(--md-error);
+}
+
+.alert-warning {
+    background: #fef7e0;
+    color: #9a6700;
+}
+
+.alert-success {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+/* === Social/IDP Links === */
 .kc-social-links {
+    margin-top: 1.5rem;
+}
+
+.kc-social-links a {
+    border-radius: 100px;
+    border: 1px solid var(--md-outline);
+    padding: 0.625rem 1rem;
+    display: block;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    transition: background 0.2s;
+}
+
+.kc-social-links a:hover {
+    background: rgba(29, 27, 32, 0.08);
+    text-decoration: none;
+}
+
+/* === Footer === */
+#kc-info-wrapper {
     margin-top: 1rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--md-on-surface-variant);
 }
