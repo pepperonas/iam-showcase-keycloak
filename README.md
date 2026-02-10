@@ -11,6 +11,8 @@
 
 Ein vollstaendiges Identity & Access Management Showcase-Projekt, das Keycloak-basiertes SSO, OAuth2/OIDC, SAML2, RBAC und 2FA (TOTP) in einer modernen Architektur demonstriert.
 
+![Login-Seite mit Demo-Credentials](docs/screenshots/login-page.png)
+
 ## Inhaltsverzeichnis
 
 - [Demo-Credentials](#demo-credentials)
@@ -177,6 +179,8 @@ docker compose -f docker/docker-compose.yml up -d
 - **Token-Typ:** JWT (RS256 signiert)
 - **Token-Lebensdauer:** Access 5 Min, Refresh 30 Min, SSO Session 8 Std.
 - **Silent Renew:** Automatische Token-Erneuerung im Hintergrund
+
+![Keycloak Login mit Custom Theme](docs/screenshots/login-keycloak.png)
 
 ### SAML 2.0 (Konzept-Demo)
 
@@ -496,6 +500,22 @@ helm template iam-showcase helm/iam-showcase/
 5. **OIDC Flow Diagram** - 10-Schritt Sequenzdiagramm des Auth-Flows
 6. **User Management** - CRUD-Interface mit rollenbasierter UI
 7. **Admin Dashboard** - Statistiken + Audit-Log
+
+#### API Tester: Admin (alle Endpoints erlaubt)
+
+![API Tester - Admin: alle 11 Endpoints gruen](docs/screenshots/api-tester-admin.png)
+
+#### API Tester: User (eingeschraenkte Rechte)
+
+![API Tester - User: POST/DELETE/Admin gesperrt](docs/screenshots/api-tester-user.png)
+
+#### API Tester: Viewer (minimale Rechte)
+
+![API Tester - Viewer: nur Public + Token Endpoints erlaubt](docs/screenshots/api-tester-viewer.png)
+
+#### Permission Matrix
+
+![Permission Matrix - Endpoint x Rolle Berechtigungs-Grid](docs/screenshots/permission-matrix.png)
 
 ---
 
