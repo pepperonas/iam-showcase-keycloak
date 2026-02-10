@@ -45,6 +45,7 @@ Ein vollstaendiges Identity & Access Management Showcase-Projekt, das Keycloak-b
   - [Rollen-Modell](#rollen-modell)
   - [Sicherheits-Konfiguration](#sicherheits-konfiguration)
   - [Custom SPI: Audit Event Listener](#custom-spi-audit-event-listener)
+  - [Brute-Force-Schutz](#brute-force-schutz)
 - [Testing](#testing)
   - [Backend (Java/Spring Boot)](#backend-javaspring-boot)
   - [Frontend (React/TypeScript)](#frontend-reacttypescript)
@@ -227,7 +228,7 @@ docker compose -f docker/docker-compose.yml up -d
 - CSRF deaktiviert (Stateless API mit JWT)
 - CORS konfiguriert (nur erlaubte Origins)
 - Session: STATELESS
-- Rate-Limiting via Keycloak Brute-Force-Schutz
+- Brute-Force-Schutz via Keycloak (Details siehe [Brute-Force-Schutz](#brute-force-schutz))
 
 ### Password Policy
 
@@ -348,7 +349,7 @@ TOKEN=$(curl -s -X POST "http://localhost:8180/realms/iam-showcase/protocol/open
 
 - **Password Policy:** min 8 Zeichen, 1 Grossbuchstabe, 1 Ziffer
 - **OTP:** TOTP, 6 Stellen, 30 Sekunden
-- **Brute Force:** Aktiv, max 5 Fehlversuche, 15 Min Sperre
+- **Brute Force:** Aktiv, max 5 Fehlversuche, 15 Min Sperre (siehe [Brute-Force-Schutz](#brute-force-schutz))
 - **Token Lifetimes:** Access 5min, Refresh 30min, SSO 8h
 
 ### Custom SPI: Audit Event Listener
@@ -357,6 +358,36 @@ TOKEN=$(curl -s -X POST "http://localhost:8180/realms/iam-showcase/protocol/open
 - Loggt: LOGIN, LOGOUT, REGISTER, ERROR Events
 - Format: Strukturiertes JSON
 - Deployment: JAR in `/opt/keycloak/providers/`
+
+### Brute-Force-Schutz
+
+Keycloak sperrt Accounts nach wiederholten Fehlversuchen automatisch:
+
+| Parameter | Wert | Beschreibung |
+|---|---|---|
+| `failureFactor` | 5 | Fehlversuche bis zur Sperre |
+| `waitIncrementSeconds` | 60 | Sperrdauer steigt pro Lockout um 60s |
+| `maxFailureWaitSeconds` | 900 | Maximale Sperrdauer (15 Min) |
+| `permanentLockout` | false | Sperre ist temporaer, nicht dauerhaft |
+
+**Wichtig - Account Enumeration Prevention:** Keycloak gibt bei gesperrten Accounts absichtlich die **gleiche Fehlermeldung** zurueck wie bei falschen Credentials (`Invalid user credentials`). Der HTTP-Statuscode bleibt `401`. Dieses Verhalten ist ein Sicherheitsfeature - ein Angreifer kann nicht erkennen, ob ein Account existiert, gesperrt ist oder das Passwort falsch war.
+
+Die Sperre laesst sich **nicht** durch die API-Antwort erkennen, sondern nur ueber die Keycloak Admin API:
+
+```bash
+# Brute-Force-Status eines Users pruefen (Admin-Token erforderlich)
+GET /admin/realms/iam-showcase/attack-detection/brute-force/users/{userId}
+# -> { "disabled": true, "numFailures": 5, ... }
+
+# Sperre manuell aufheben
+DELETE /admin/realms/iam-showcase/attack-detection/brute-force/users/{userId}
+```
+
+Verifizierter Ablauf:
+1. Login mit korrektem Passwort → Token erhalten
+2. 5x falsches Passwort → `401 Invalid user credentials`
+3. Login mit **korrektem** Passwort → `401 Invalid user credentials` (Account gesperrt)
+4. Admin hebt Sperre auf → Login funktioniert wieder
 
 ---
 
