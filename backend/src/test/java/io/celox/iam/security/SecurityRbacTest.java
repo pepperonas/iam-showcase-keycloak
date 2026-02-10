@@ -1,17 +1,21 @@
 package io.celox.iam.security;
 
+import io.celox.iam.service.KeycloakAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +27,9 @@ class SecurityRbacTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private KeycloakAdminService keycloakAdminService;
 
     @Test
     void publicEndpointsShouldBeAccessibleWithoutAuth() throws Exception {
@@ -61,6 +68,13 @@ class SecurityRbacTest {
 
     @Test
     void adminDashboardShouldAllowAdminRole() throws Exception {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("totalUsers", 4);
+        stats.put("totalRealmRoles", 4);
+        stats.put("totalClientRoles", 3);
+        stats.put("realm", "iam-showcase");
+        when(keycloakAdminService.getDashboardStats()).thenReturn(stats);
+
         mockMvc.perform(get("/api/v1/admin/dashboard")
                 .with(adminJwt()))
                 .andExpect(status().isOk());
