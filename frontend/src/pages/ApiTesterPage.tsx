@@ -73,13 +73,19 @@ export function ApiTesterPage() {
       const start = Date.now()
 
       try {
-        const url = apiBaseUrl + ep.path.replace('/api/v1', '').replace('{id}', 'test-id')
+        // Fuer Batch-Test: DELETE/POST als GET ausfuehren, Pfad-Variablen entfernen
+        let path = ep.path.replace('/api/v1', '')
+        const isMutating = ep.method === 'DELETE' || ep.method === 'POST' || ep.method === 'PUT'
+        if (isMutating) {
+          path = path.replace(/\/\{[^}]+\}/, '')
+        }
+        const url = apiBaseUrl + path
         const headers: Record<string, string> = { 'Content-Type': 'application/json' }
         if (auth.accessToken && ep.requiredRole) {
           headers['Authorization'] = `Bearer ${auth.accessToken}`
         }
 
-        const res = await axios({ method: ep.method === 'DELETE' || ep.method === 'POST' ? 'get' : ep.method.toLowerCase(), url, headers })
+        const res = await axios({ method: isMutating ? 'get' : ep.method.toLowerCase(), url, headers })
         setBatchResults(prev => ({ ...prev, [i]: { status: res.status, time: Date.now() - start, loading: false } }))
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response) {
