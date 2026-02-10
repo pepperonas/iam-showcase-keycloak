@@ -21,19 +21,27 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           command_timeout: 10m
           script: |
-            cd /opt/iam-showcase-keycloak
+            APP_DIR=/opt/iam-showcase-keycloak
+
+            # Ensure it's a proper git repo, clone fresh if not
+            if [ ! -d "$APP_DIR/.git" ]; then
+              echo "Not a git repo - cloning fresh..."
+              rm -rf "$APP_DIR"
+              git clone https://github.com/pepperonas/iam-showcase-keycloak.git "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
             git fetch origin main
             git reset --hard origin/main
-            echo "=== Git status ==="
-            git log --oneline -5
-            echo "=== Check index.html for fonts ==="
-            grep -c "fonts.googleapis" frontend/index.html || echo "NO GOOGLE FONTS FOUND!"
-            head -12 frontend/index.html
-            echo "=== Check LoginPage exists ==="
-            ls -la frontend/src/pages/LoginPage.tsx || echo "NO LOGINPAGE!"
-            docker builder prune -af
-            COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml build --no-cache --pull frontend backend
+
+            echo "=== Verified commit ==="
+            git log --oneline -1
+
+            # Build and deploy
+            docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml build --no-cache frontend backend
             docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d --force-recreate frontend backend
+
+            # Health check with retry
             echo "Waiting for backend to start..."
             for i in $(seq 1 12); do
               if curl -sf http://localhost:9080/api/v1/public/health > /dev/null 2>&1; then
