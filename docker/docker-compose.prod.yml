@@ -23,7 +23,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD:-iam_app}
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/iam-showcase
+      KEYCLOAK_ISSUER_URI: https://auth.iam-demo.celox.io/realms/iam-showcase
       KEYCLOAK_JWK_URI: http://keycloak:8080/realms/iam-showcase/protocol/openid-connect/certs
     ports:
       - "127.0.0.1:9080:8080"
