@@ -4,15 +4,12 @@ import { RoleBadge } from '../components/common/RoleBadge'
 
 export function RoleSwitcherPage() {
   const auth = useAuth()
-  const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8180'
-  const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'iam-showcase'
 
   const switchUser = (username: string) => {
-    // Logout und dann mit login_hint fuer den neuen User re-login
-    const logoutUrl = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/logout`
-    const redirectUri = `${window.location.origin}/login?hint=${encodeURIComponent(username)}`
-
-    window.location.href = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(redirectUri)}&client_id=iam-frontend`
+    // signoutRedirect sendet id_token_hint automatisch -> kein Bestaetigungsdialog
+    auth.signoutRedirect({
+      post_logout_redirect_uri: `${window.location.origin}/login?hint=${encodeURIComponent(username)}`,
+    })
   }
 
   return (
