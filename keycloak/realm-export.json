@@ -266,6 +266,25 @@
       "clientRoles": {
         "iam-backend": []
       }
+    },
+    {
+      "username": "service-account-iam-backend",
+      "enabled": true,
+      "serviceAccountClientId": "iam-backend",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "manage-realm",
+          "view-realm",
+          "manage-clients",
+          "view-clients",
+          "query-users",
+          "query-clients",
+          "query-groups",
+          "query-realms"
+        ]
+      }
     }
   ],
   "eventsEnabled": true,
