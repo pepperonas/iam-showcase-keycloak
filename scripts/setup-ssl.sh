@@ -5,7 +5,7 @@
 set -euo pipefail
 
 DOMAINS="-d iam-demo.celox.io -d auth.iam-demo.celox.io"
-EMAIL="admin@celox.io"
+EMAIL="martin.pfeffer@celox.io"
 
 echo "=== SSL Setup mit Let's Encrypt ==="
 
