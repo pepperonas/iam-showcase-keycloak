@@ -19,8 +19,7 @@ frontend/dist/
 frontend/.env.local
 
 # Docker
-docker/postgres-kc-data/
-docker/postgres-app-data/
+docker/postgres-data/
 
 # Environment
 .env

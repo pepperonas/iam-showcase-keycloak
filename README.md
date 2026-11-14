@@ -4,7 +4,7 @@
 ![Java 21](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1-green)
 ![React 18](https://img.shields.io/badge/React-18-blue)
-![Keycloak 24](https://img.shields.io/badge/Keycloak-24-red)
+![Keycloak 26](https://img.shields.io/badge/Keycloak-26-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
 **Live Demo:** [https://iam-demo.celox.io](https://iam-demo.celox.io)
@@ -111,17 +111,14 @@ docker compose -f docker/docker-compose.yml up -d
               |                             |
     +---------v----------+       +----------v---------+
     |  Spring Boot API   |       |  PostgreSQL        |
-    |  (Resource Server) |       |  (Keycloak DB)     |
-    |  Port 8080         |       |  Port 5432         |
-    +---------+----------+       +--------------------+
-              |
-           JDBC
-              |
-    +---------v----------+
-    |  PostgreSQL        |
-    |  (App DB)          |
-    |  Port 5432         |
-    +--------------------+
+    |  (Resource Server) +------>|  DB keycloak       |
+    |  Port 8080         | JDBC  |  DB iam_showcase   |
+    +--------------------+       +--------------------+
+```
+
+Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
+
+```
 ```
 
 ### Komponenten
@@ -462,26 +459,33 @@ docker compose -f docker/docker-compose.yml down
 
 ### VPS Deployment (Produktion)
 
+Der Server baut nichts selbst. Die CI baut nach jedem Push auf `main` die drei
+Images (Backend, Frontend, Keycloak) und legt sie nach GHCR; der VPS zieht sie
+nur noch und startet sie.
+
 **Voraussetzungen:**
-- VPS mit Docker + Docker Compose
+- VPS mit Docker + Docker Compose und Nginx als Reverse Proxy
+  (`infrastructure/nginx/`, Zertifikat ueber `scripts/setup-ssl.sh`)
 - DNS: `iam-demo.celox.io` + `auth.iam-demo.celox.io` -> VPS IP
-- SSH-Zugang
+- SSH-Zugang mit Schluessel, Repository unter `/opt/iam-showcase-keycloak`
 
 ```bash
-# Auf VPS: Repository klonen
-git clone https://github.com/pepperonas/iam-showcase-keycloak.git /opt/iam-showcase-keycloak
-cd /opt/iam-showcase-keycloak
-
-# .env erstellen (basierend auf .env.example)
-cp .env.example .env
-# Sichere Passwoerter setzen!
-
-# Starten mit Produktion-Overrides
-docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
-
-# SSL einrichten
-sudo bash scripts/setup-ssl.sh
+# Push auf main, CI-Lauf abwarten, dann:
+bash scripts/deploy-vps.sh
 ```
+
+Das Skript legt beim ersten Lauf eine `.env` mit zufaelligen Passwoertern auf
+dem Server an (Keycloak-Admin, Datenbanken, Client-Secret des Backends).
+
+**Ressourcen:** Jeder Container hat eine feste Speicher- und CPU-Grenze
+(`docker/docker-compose.yml`), zusammen hoechstens 1,1 GB RAM und 2,5 Kerne:
+
+| Container | RAM-Grenze | CPU-Grenze | Massnahme |
+|-----------|-----------|-----------|-----------|
+| Keycloak | 640 MB | 1,0 | optimierter Build (`start --optimized`), lokaler Cache, Heap 288 MB |
+| Backend | 320 MB | 0,75 | Heap 144 MB, Serial GC, kleine Thread- und Verbindungspools |
+| PostgreSQL | 128 MB | 0,5 | eine Instanz fuer beide Datenbanken, `shared_buffers` 24 MB |
+| Frontend (nginx) | 32 MB | 0,25 | statische Dateien |
 
 ### Kubernetes (Helm)
 
@@ -552,7 +556,7 @@ helm template iam-showcase helm/iam-showcase/
 
 ## Tech-Stack
 
-- **Identity Provider:** Keycloak 24 (OAuth2, OIDC, SAML2, TOTP)
+- **Identity Provider:** Keycloak 26 (OAuth2, OIDC, SAML2, TOTP)
 - **Backend:** Spring Boot 4.1 (Spring Framework 7), Java 21, Spring Security OAuth2 Resource Server
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Material Design 3
 - **Datenbank:** PostgreSQL 16

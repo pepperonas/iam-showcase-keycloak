@@ -1,35 +1,59 @@
 #!/bin/bash
-# Deploy-Skript fuer VPS (69.62.121.168)
+# Deploy der Demo auf den VPS.
 # Verwendung: bash scripts/deploy-vps.sh
+#
+# Der Server baut nichts: er zieht die Images, die die CI nach jedem Push
+# auf main nach GHCR legt, und startet sie mit den Grenzen aus der
+# Compose-Datei. Vorher also pushen und den CI-Lauf abwarten.
 
 set -euo pipefail
 
-VPS_HOST="69.62.121.168"
-VPS_USER="deploy"
-PROJECT_DIR="/opt/iam-showcase-keycloak"
+VPS="${VPS:-root@69.62.121.168}"
 
-echo "=== IAM Showcase Deploy ==="
+ssh "$VPS" bash -s <<'REMOTE'
+set -euo pipefail
+cd /opt/iam-showcase-keycloak
 
-echo "[1/5] Dateien synchronisieren..."
-rsync -avz --exclude '.git' --exclude 'node_modules' --exclude 'target' \
-  . "${VPS_USER}@${VPS_HOST}:${PROJECT_DIR}/"
+git fetch --quiet origin main
+git reset --quiet --hard origin/main
+echo "Stand: $(git log --oneline -1)"
 
-echo "[2/5] Services neu bauen und starten..."
-ssh "${VPS_USER}@${VPS_HOST}" "cd ${PROJECT_DIR} && \
-  docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d --build"
+# Geheimnisse entstehen einmalig auf dem Server und verlassen ihn nicht.
+if [ ! -f .env ]; then
+  umask 077
+  cat > .env <<EOF
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=$(openssl rand -hex 24)
+KC_DB_PASSWORD=$(openssl rand -hex 24)
+APP_DB_PASSWORD=$(openssl rand -hex 24)
+KEYCLOAK_ADMIN_CLIENT_SECRET=$(openssl rand -hex 24)
+EOF
+  echo ".env neu angelegt"
+fi
 
-echo "[3/5] Warten auf Keycloak..."
-sleep 30
+dc() {
+  docker compose --env-file .env \
+    -f docker/docker-compose.yml -f docker/docker-compose.prod.yml "$@"
+}
 
-echo "[4/5] Health Check..."
-ssh "${VPS_USER}@${VPS_HOST}" "curl -sf http://localhost:8080/api/v1/public/health"
-echo ""
+dc pull --quiet
+dc up -d --no-build --wait --wait-timeout 300
 
-echo "[5/5] Nginx konfigurieren..."
-ssh "${VPS_USER}@${VPS_HOST}" "sudo cp ${PROJECT_DIR}/infrastructure/nginx/iam-demo-https.conf /etc/nginx/sites-available/iam-demo.conf && \
-  sudo ln -sf /etc/nginx/sites-available/iam-demo.conf /etc/nginx/sites-enabled/ && \
-  sudo nginx -t && sudo systemctl reload nginx"
+for i in $(seq 1 30); do
+  if curl -sf http://127.0.0.1:9080/api/v1/public/health > /dev/null; then
+    echo "Backend antwortet."
+    docker image prune -f > /dev/null
+    docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}' \
+      iam-postgres iam-keycloak iam-backend iam-frontend
+    exit 0
+  fi
+  sleep 5
+done
 
-echo "=== Deployment abgeschlossen ==="
+echo "Backend antwortet nicht:" >&2
+docker logs iam-backend --tail 50 >&2
+exit 1
+REMOTE
+
 echo "Frontend: https://iam-demo.celox.io"
 echo "Keycloak: https://auth.iam-demo.celox.io"

@@ -1,37 +1,26 @@
+# Produktion (VPS): Images kommen fertig gebaut aus der CI (GHCR),
+# auf dem Server wird nichts kompiliert. Ports nur auf loopback, davor nginx.
 services:
+  postgres:
+    restart: unless-stopped
+
   keycloak:
-    command: start-dev --import-realm
+    restart: unless-stopped
     environment:
-      KC_HOSTNAME: auth.iam-demo.celox.io
-      KC_PROXY: edge
-      KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME_STRICT_HTTPS: "false"
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KC_HOSTNAME: https://auth.iam-demo.celox.io
+      KC_PROXY_HEADERS: xforwarded
     ports:
       - "127.0.0.1:9180:8080"
 
-  postgres-keycloak:
-    environment:
-      POSTGRES_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
-
-  postgres-app:
-    environment:
-      POSTGRES_PASSWORD: ${APP_DB_PASSWORD:-iam_app}
-
   backend:
+    restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD:-iam_app}
       KEYCLOAK_ISSUER_URI: https://auth.iam-demo.celox.io/realms/iam-showcase
-      KEYCLOAK_JWK_URI: http://keycloak:8080/realms/iam-showcase/protocol/openid-connect/certs
     ports:
       - "127.0.0.1:9080:8080"
 
   frontend:
-    build:
-      args:
-        VITE_KEYCLOAK_URL: https://auth.iam-demo.celox.io
-        VITE_API_BASE_URL: https://iam-demo.celox.io/api/v1
+    restart: unless-stopped
     ports:
       - "127.0.0.1:4001:80"

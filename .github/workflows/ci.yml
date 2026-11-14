@@ -100,34 +100,52 @@ jobs:
           mvn -B -q dependency:resolve -f backend/pom.xml
           mvn -B -q dependency:resolve -f keycloak/extensions/pom.xml
 
+      # Auf einen Commit festgenagelt: ein beweglicher Verweis wie @master
+      # fuehrt bei jedem Lauf ungeprueft den neuesten Stand der Action aus.
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
           severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
 
   build-images:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
+    needs: [backend-tests, frontend-tests, security-scan]
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/pepperonas
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-          cache: maven
+      - name: Build backend image
+        run: docker build -t $REGISTRY/iam-showcase-backend:latest backend/
 
-      - name: Build backend JAR
-        working-directory: backend
-        run: mvn clean package -DskipTests -B
+      # Die URLs der Demo werden beim Build fest in das Frontend geschrieben.
+      - name: Build frontend image
+        run: |
+          docker build -t $REGISTRY/iam-showcase-frontend:latest \
+            --build-arg VITE_KEYCLOAK_URL=https://auth.iam-demo.celox.io \
+            --build-arg VITE_API_BASE_URL=https://iam-demo.celox.io/api/v1 \
+            frontend/
 
-      - name: Build backend Docker image
-        run: docker build -t iam-showcase-backend backend/
+      - name: Build Keycloak image
+        run: docker build -t $REGISTRY/iam-showcase-keycloak:latest keycloak/
 
-      - name: Build frontend Docker image
-        run: docker build -t iam-showcase-frontend frontend/
+      # Nur von main veroeffentlichen. Der VPS zieht diese Images und baut
+      # selbst nichts (scripts/deploy-vps.sh).
+      - name: Push images to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for image in backend frontend keycloak; do
+            docker tag $REGISTRY/iam-showcase-$image:latest $REGISTRY/iam-showcase-$image:${{ github.sha }}
+            docker push $REGISTRY/iam-showcase-$image:latest
+            docker push $REGISTRY/iam-showcase-$image:${{ github.sha }}
+          done

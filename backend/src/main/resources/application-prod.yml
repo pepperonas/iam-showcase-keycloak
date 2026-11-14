@@ -6,7 +6,15 @@ logging:
 spring:
   jpa:
     show-sql: false
+  datasource:
+    hikari:
+      maximum-pool-size: 4
+      minimum-idle: 1
 
 server:
+  tomcat:
+    threads:
+      max: 16
+      min-spare: 2
   error:
     include-message: never
