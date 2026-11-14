@@ -6,6 +6,7 @@ import { useRoles } from '../hooks/useRoles'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RoleBadge } from '../components/common/RoleBadge'
 import type { UserDto, PagedResponse } from '../types'
+import { PageIntro } from '../components/common/PageIntro'
 
 export function UserManagementPage() {
   const auth = useAuth()
@@ -35,12 +36,12 @@ export function UserManagementPage() {
   }
 
   const handleDelete = async (userId: string) => {
-    if (!confirm('Benutzer wirklich loeschen?')) return
+    if (!confirm('Benutzer wirklich löschen?')) return
     try {
       await deleteUser(userId)
       await loadUsers()
     } catch (err) {
-      setError('Fehler beim Loeschen')
+      setError('Fehler beim Löschen')
       console.error(err)
     }
   }
@@ -49,14 +50,25 @@ export function UserManagementPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-headline-sm text-on-surface">User Management</h2>
-        {canWrite && (
-          <button className="btn-filled">
-            Neuer Benutzer
-          </button>
-        )}
-      </div>
+      <PageIntro
+        title="User Management"
+        tryIt={[
+          'Als User sehen Sie nur die Liste. Als Admin erscheint zusätzlich die Spalte „Aktionen“ mit dem Löschen-Knopf.',
+        ]}
+        actions={canWrite && <button className="btn-filled">Neuer Benutzer</button>}
+      >
+        <p>
+          Die Liste der Benutzer, die in Keycloak angelegt sind. Die App liest sie nicht direkt aus Keycloak,
+          sondern fragt das Backend, und das Backend fragt Keycloak. So bleiben die Zugangsdaten für die
+          Keycloak-Verwaltung auf dem Server und gelangen nie in den Browser.
+        </p>
+        <p>
+          Welche Knöpfe Sie sehen, hängt von Ihrer Rolle ab: Lesen braucht{' '}
+          <code className="font-mono">api-read</code>, Anlegen <code className="font-mono">api-write</code>,
+          Löschen <code className="font-mono">api-admin</code>. Das Ausblenden ist nur Komfort. Die
+          eigentliche Kontrolle macht das Backend bei jeder Anfrage.
+        </p>
+      </PageIntro>
 
       {error && (
         <div className="card-outlined p-4 border-red-200 bg-red-50 text-md-error text-body-md">{error}</div>
@@ -98,7 +110,7 @@ export function UserManagementPage() {
                       onClick={() => handleDelete(user.id)}
                       className="btn-text text-md-error text-label-md px-3 py-1"
                     >
-                      Loeschen
+                      Löschen
                     </button>
                   </td>
                 )}

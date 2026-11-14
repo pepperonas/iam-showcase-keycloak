@@ -3,6 +3,7 @@ import { useAuth } from '../auth/useAuth'
 import { setAuthToken } from '../api/axiosInstance'
 import { API_ENDPOINTS } from '../types/api'
 import axios from 'axios'
+import { PageIntro } from '../components/common/PageIntro'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
 
@@ -128,7 +129,24 @@ export function ApiTesterPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-headline-sm text-on-surface">API Tester</h2>
+      <PageIntro
+        title="API Tester"
+        tryIt={[
+          'Klicken Sie auf „Alle testen“ und merken Sie sich das Muster aus Grün und Rot.',
+          'Wechseln Sie im Role Switcher das Konto und testen Sie erneut: Das Muster ändert sich, obwohl die App dieselbe ist.',
+        ]}
+      >
+        <p>
+          Das Backend bietet elf Schnittstellen an („Endpoints“). Manche sind öffentlich, manche brauchen
+          eine Anmeldung, manche eine bestimmte Rolle. Hier rufen Sie diese Endpoints mit Ihrem aktuellen
+          Konto auf und sehen die echte Antwort des Servers.
+        </p>
+        <p>
+          Das Backend antwortet mit einem Statuscode: <strong>200</strong> heißt erlaubt,{' '}
+          <strong>401</strong> heißt „nicht angemeldet“ (kein gültiges Token), <strong>403</strong> heißt
+          „angemeldet, aber die nötige Rolle fehlt“.
+        </p>
+      </PageIntro>
 
       {/* Batch-Test: Alle Endpoints */}
       <div className="card-elevated p-6">
@@ -136,7 +154,7 @@ export function ApiTesterPage() {
           <div>
             <h3 className="text-title-lg text-on-surface">Schnelltest</h3>
             <p className="text-body-sm text-on-surface-variant mt-0.5">
-              Alle Endpoints mit der aktuellen Rolle testen
+              Ruft alle Endpoints nacheinander mit Ihrem Token auf
               {auth.username && (
                 <> &mdash; angemeldet als <strong className="text-on-surface">{auth.username}</strong></>
               )}
@@ -233,18 +251,29 @@ export function ApiTesterPage() {
               <span className="w-3 h-3 rounded-full bg-green-500" /> Erlaubt
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-amber-500" /> Nicht authentifiziert
+              <span className="w-3 h-3 rounded-full bg-amber-500" /> Nicht angemeldet (401)
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-red-500" /> Verboten
+              <span className="w-3 h-3 rounded-full bg-red-500" /> Rolle fehlt (403)
             </div>
           </div>
+        )}
+
+        {batchHasResults && !batchRunning && (
+          <p className="mt-3 text-body-sm text-on-surface-variant max-w-3xl">
+            „400 Erlaubt“ oder „404 Erlaubt“ bedeutet: Die Berechtigung war in Ordnung, das Backend hat die
+            Anfrage angenommen. Der Schnelltest schickt beim Anlegen aber absichtlich leere Daten und beim
+            Löschen eine Kennung, die es nicht gibt, damit er nichts verändert.
+          </p>
         )}
       </div>
 
       {/* Einzelner Endpoint-Test */}
       <div className="card-elevated p-6">
-        <h3 className="text-title-lg text-on-surface mb-4">Einzeltest</h3>
+        <h3 className="text-title-lg text-on-surface mb-1">Einzeltest</h3>
+        <p className="text-body-sm text-on-surface-variant mb-4">
+          Ruft einen einzelnen Endpoint auf und zeigt unten die vollständige Antwort des Servers.
+        </p>
         <div className="flex gap-4 items-end">
           <div className="flex-1">
             <label className="block text-label-md text-on-surface-variant mb-1">Endpoint</label>
@@ -273,13 +302,17 @@ export function ApiTesterPage() {
 
         <div className="mt-3 flex gap-4 text-body-sm text-on-surface-variant">
           <span>Methode: <span className={`font-medium ${endpoint.method === 'GET' ? 'text-green-600' : endpoint.method === 'DELETE' ? 'text-red-600' : 'text-amber-600'}`}>{endpoint.method}</span></span>
-          <span>Rolle: <span className="font-medium text-on-surface">{endpoint.requiredRole || 'oeffentlich'}</span></span>
+          <span>Rolle: <span className="font-medium text-on-surface">{endpoint.requiredRole || 'öffentlich'}</span></span>
         </div>
       </div>
 
       {/* Request */}
       <div className="card-elevated p-6">
-        <h3 className="text-title-lg text-on-surface mb-3">Request</h3>
+        <h3 className="text-title-lg text-on-surface mb-1">Request</h3>
+        <p className="text-body-sm text-on-surface-variant mb-3">
+          So sieht die Anfrage aus, die Ihr Browser abschickt. Die Zeile „Authorization: Bearer“ ist der
+          mitgeschickte Ausweis, also Ihr Token.
+        </p>
         <pre className="bg-secondary-800 text-gray-300 p-4 rounded-md text-body-sm font-mono overflow-auto">
 {`${endpoint.method} ${endpoint.path}
 Host: ${apiBaseUrl.replace('https://', '').replace('http://', '').replace('/api/v1', '')}

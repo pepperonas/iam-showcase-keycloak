@@ -1,6 +1,7 @@
 import { useAuth } from '../auth/useAuth'
 import { DEMO_USERS } from '../types/auth'
 import { RoleBadge } from '../components/common/RoleBadge'
+import { PageIntro } from '../components/common/PageIntro'
 
 export function RoleSwitcherPage() {
   const auth = useAuth()
@@ -14,10 +15,19 @@ export function RoleSwitcherPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-headline-sm text-on-surface">Role Switcher</h2>
-      <p className="text-body-lg text-on-surface-variant">
-        Schnell zwischen Demo-Benutzern wechseln, um verschiedene Berechtigungsstufen zu testen.
-      </p>
+      <PageIntro
+        title="Role Switcher"
+        tryIt={[
+          'Melden Sie sich als Viewer an: Zwei Menüpunkte verschwinden, und der API Tester lehnt alles ab, was eine Rolle verlangt.',
+          'Melden Sie sich als Admin an: Alles ist erlaubt, und der Admin-Bereich erscheint im Menü.',
+        ]}
+      >
+        <p>
+          Rollen versteht man am besten im Vergleich. Hier wechseln Sie mit einem Klick zu einem anderen
+          Demo-Konto. Dabei werden Sie bei Keycloak abgemeldet und landen auf dessen Anmeldeseite, der
+          Benutzername ist schon eingetragen, das Passwort steht auf der Karte.
+        </p>
+      </PageIntro>
 
       {auth.isAuthenticated && (
         <div className="card-outlined p-4 border-blue-200 bg-blue-50">
@@ -49,6 +59,8 @@ export function RoleSwitcherPage() {
                   </span>
                 )}
               </div>
+
+              <p className="text-body-md text-on-surface-variant mb-4">{user.description}</p>
 
               <div className="mb-4">
                 <div className="text-label-sm text-on-surface-variant mb-1">Rollen:</div>

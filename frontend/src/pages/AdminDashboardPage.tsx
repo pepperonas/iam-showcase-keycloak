@@ -4,6 +4,7 @@ import { setAuthToken } from '../api/axiosInstance'
 import { getDashboardStats, getAuditLog } from '../api/adminApi'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import type { DashboardStats, AuditLogDto, PagedResponse } from '../types'
+import { PageIntro } from '../components/common/PageIntro'
 
 export function AdminDashboardPage() {
   const auth = useAuth()
@@ -25,7 +26,17 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-headline-sm text-on-surface">Admin Dashboard</h2>
+      <PageIntro title="Admin Dashboard">
+        <p>
+          Diese Seite sehen nur Konten mit der Rolle <code className="font-mono">admin</code>. Für alle
+          anderen fehlt der Menüpunkt, und das Backend antwortet auf die Anfragen dahinter mit „403 Verboten“.
+        </p>
+        <p>
+          Oben stehen Kennzahlen aus Keycloak: der Name der Umgebung („Realm“), die Zahl der Benutzer und der
+          Rollen. Darunter das Audit-Log: Das Backend schreibt bei jeder schreibenden Anfrage (anlegen, ändern,
+          löschen) mit, wer sie wann geschickt hat. So lässt sich später nachvollziehen, wer etwas geändert hat.
+        </p>
+      </PageIntro>
 
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -83,7 +94,7 @@ export function AdminDashboardPage() {
               {(!auditLogs || auditLogs.content.length === 0) && (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-body-md text-on-surface-variant">
-                    Noch keine Audit-Eintraege vorhanden
+                    Noch keine Audit-Einträge vorhanden. Starten Sie im API Tester den Schnelltest: Er schickt zwei schreibende Anfragen, die danach hier stehen.
                   </td>
                 </tr>
               )}

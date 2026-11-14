@@ -1,3 +1,5 @@
+import { ROLE_INFO } from '../../types/auth'
+
 interface Props {
   role: string
 }
@@ -16,7 +18,10 @@ export function RoleBadge({ role }: Props) {
   const colorClasses = ROLE_COLORS[role] || 'bg-surface-container-highest text-on-surface-variant border-outline-variant'
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-label-sm font-medium ${colorClasses}`}>
+    <span
+      title={ROLE_INFO[role]}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-label-sm font-medium ${colorClasses}`}
+    >
       {role}
     </span>
   )

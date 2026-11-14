@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../types/api'
+import { PageIntro } from '../components/common/PageIntro'
 
 const ROLES = ['admin', 'manager', 'user', 'viewer', 'api-admin', 'api-write', 'api-read']
 
@@ -22,8 +23,25 @@ function hasAccess(requiredRole: string | null, role: string): boolean {
 export function PermissionMatrixPage() {
   return (
     <div className="space-y-6">
-      <h2 className="text-headline-sm text-on-surface">Permission Matrix</h2>
-      <p className="text-body-lg text-on-surface-variant">Berechtigungs-Uebersicht: Welche Rolle hat Zugriff auf welchen Endpoint</p>
+      <PageIntro
+        title="Permission Matrix"
+        tryIt={[
+          'Suchen Sie die Spalte Ihrer Rolle und prüfen Sie im API Tester, ob das Backend genauso antwortet.',
+        ]}
+      >
+        <p>
+          Die Tabelle zeigt das Regelwerk dieser Demo auf einen Blick. Jede Zeile ist eine Schnittstelle des
+          Backends (ein „Endpoint“), jede Spalte eine Rolle. Grün heißt: Wer diese Rolle hat, darf den
+          Endpoint aufrufen. Rot heißt: Das Backend lehnt ab.
+        </p>
+        <p>
+          Die ersten vier Spalten sind fachliche Rollen. Sie bringen API-Rechte mit: Ein{' '}
+          <code className="font-mono">manager</code> hat zum Beispiel automatisch{' '}
+          <code className="font-mono">api-write</code> und <code className="font-mono">api-read</code>. Die
+          letzten drei Spalten sind diese API-Rechte einzeln. Endpoints unter{' '}
+          <code className="font-mono">/public</code> brauchen gar keine Anmeldung.
+        </p>
+      </PageIntro>
 
       <div className="card-elevated overflow-x-auto">
         <table className="min-w-full">
@@ -45,6 +63,7 @@ export function PermissionMatrixPage() {
                     {ep.method}
                   </span>
                   <span className="font-mono text-on-surface">{ep.path}</span>
+                  <span className="block text-body-sm text-on-surface-variant mt-0.5">{ep.description}</span>
                 </td>
                 {ROLES.map((role) => {
                   const access = hasAccess(ep.requiredRole, role)
