@@ -478,12 +478,12 @@ Das Skript legt beim ersten Lauf eine `.env` mit zufaelligen Passwoertern auf
 dem Server an (Keycloak-Admin, Datenbanken, Client-Secret des Backends).
 
 **Ressourcen:** Jeder Container hat eine feste Speicher- und CPU-Grenze
-(`docker/docker-compose.yml`), zusammen hoechstens 1,1 GB RAM und 2,5 Kerne:
+(`docker/docker-compose.yml`), zusammen hoechstens 1,2 GB RAM und 2,5 Kerne:
 
 | Container | RAM-Grenze | CPU-Grenze | Massnahme |
 |-----------|-----------|-----------|-----------|
 | Keycloak | 640 MB | 1,0 | optimierter Build (`start --optimized`), lokaler Cache, Heap 288 MB |
-| Backend | 320 MB | 0,75 | Heap 144 MB, Serial GC, kleine Thread- und Verbindungspools |
+| Backend | 400 MB | 0,75 | Heap 128 MB, Serial GC, kleine Thread- und Verbindungspools |
 | PostgreSQL | 128 MB | 0,5 | eine Instanz fuer beide Datenbanken, `shared_buffers` 24 MB |
 | Frontend (nginx) | 32 MB | 0,25 | statische Dateien |
 
