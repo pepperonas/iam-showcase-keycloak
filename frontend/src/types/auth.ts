@@ -52,4 +52,6 @@ export const ROLE_INFO: Record<string, string> = {
   'api-admin': 'API-Recht: darf Daten löschen.',
   'api-write': 'API-Recht: darf Daten anlegen und ändern.',
   'api-read': 'API-Recht: darf Daten lesen.',
+  offline_access: 'Technische Standardrolle von Keycloak, für diese Demo ohne Bedeutung.',
+  uma_authorization: 'Technische Standardrolle von Keycloak, für diese Demo ohne Bedeutung.',
 }

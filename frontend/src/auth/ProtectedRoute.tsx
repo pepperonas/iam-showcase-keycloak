@@ -34,7 +34,7 @@ export function ProtectedRoute({ children, roles }: Props) {
           </div>
           <h2 className="text-headline-sm text-on-surface mb-2">Zugriff verweigert</h2>
           <p className="text-body-md text-on-surface-variant mb-4">
-            Sie haben nicht die erforderlichen Berechtigungen fuer diese Seite.
+            Ihrem Konto fehlt die Rolle, die diese Seite verlangt. Wechseln Sie im Role Switcher zu einem Konto, das sie hat:
           </p>
           <div className="flex flex-wrap gap-1.5 justify-center">
             {roles.map((role) => (
