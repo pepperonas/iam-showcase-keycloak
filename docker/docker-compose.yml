@@ -88,16 +88,16 @@ services:
       KEYCLOAK_JWK_URI: http://keycloak:8080/realms/iam-showcase/protocol/openid-connect/certs
       KEYCLOAK_ADMIN_URL: http://keycloak:8080
       KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET:-backend-secret-change-in-prod}
-      # Heap 128 + Metaspace 112 + Code-Cache 40 + Direktspeicher 24 = 304 MB,
-      # der Rest bis zur Grenze von 400 MB ist Platz fuer Thread-Stacks und JVM.
-      JAVA_TOOL_OPTIONS: "-Xms48m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=40m -XX:MaxDirectMemorySize=24m -XX:+UseSerialGC -Xss512k"
+      # Heap 128 + Metaspace 176 + Code-Cache 40 + Direktspeicher 24 = 368 MB,
+      # der Rest bis zur Grenze von 448 MB ist Platz fuer Thread-Stacks und JVM.
+      JAVA_TOOL_OPTIONS: "-Xms48m -Xmx128m -XX:MaxMetaspaceSize=176m -XX:ReservedCodeCacheSize=40m -XX:MaxDirectMemorySize=24m -XX:+UseSerialGC -Xss512k"
     depends_on:
       keycloak:
         condition: service_healthy
       postgres:
         condition: service_healthy
-    mem_limit: 400m
-    memswap_limit: 400m
+    mem_limit: 448m
+    memswap_limit: 448m
     cpus: 0.75
     networks:
       - iam-network
