@@ -11,6 +11,8 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:${KC_VERSION}
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# Ein Knoten, also kein Cluster-Cache: spart JGroups samt Threads.
+ENV KC_CACHE=local
 COPY realm-export.json /opt/keycloak/data/import/realm-export.json
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 CMD ["start", "--optimized", "--import-realm"]

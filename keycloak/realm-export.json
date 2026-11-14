@@ -110,6 +110,7 @@
         "post.logout.redirect.uris": "http://localhost:5173/*##https://iam-demo.celox.io/*"
       },
       "defaultClientScopes": [
+        "basic",
         "web-origins",
         "acr",
         "profile",
@@ -139,6 +140,7 @@
         "use.refresh.tokens": "true"
       },
       "defaultClientScopes": [
+        "basic",
         "web-origins",
         "acr",
         "profile",
