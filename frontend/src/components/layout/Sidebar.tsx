@@ -64,7 +64,7 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-outline-variant text-label-sm text-on-surface-variant">
-        Keycloak 24 | Spring Boot 3.3 | React 18
+        Keycloak 26 | Spring Boot 4.1 | React 18
       </div>
     </aside>
   )

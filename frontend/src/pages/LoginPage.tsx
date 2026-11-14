@@ -4,7 +4,7 @@ import { DEMO_USERS } from '../types/auth'
 import { Navigate, useSearchParams } from 'react-router-dom'
 
 const TECH_STACK = [
-  'Keycloak 24', 'Spring Boot 3.3', 'Java 21', 'React 18',
+  'Keycloak 26', 'Spring Boot 4.1', 'Java 21', 'React 18',
   'TypeScript', 'Tailwind CSS', 'OIDC / PKCE', 'TOTP / 2FA',
 ]
 

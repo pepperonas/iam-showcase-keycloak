@@ -267,3 +267,22 @@ a.btn-default:hover {
     font-size: 0.8125rem;
     color: var(--md-on-surface-variant);
 }
+
+/* === Keycloak 26 ===
+   Das Sprachmenue wird dort nicht mehr vom Basis-Theme versteckt und stand
+   dauerhaft offen. Es oeffnet jetzt per Klick, Tastaturfokus oder Hover. */
+#kc-locale ul {
+    display: none;
+}
+
+#kc-current-locale-link[aria-expanded="true"] + ul,
+#kc-locale-dropdown:hover ul,
+#kc-locale-dropdown:focus-within ul {
+    display: block;
+}
+
+/* Die Karte ragte um ihr Polster ueber den Viewport hinaus (Querbalken). */
+.card-pf {
+    box-sizing: border-box;
+    max-width: 100%;
+}
