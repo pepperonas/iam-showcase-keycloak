@@ -85,6 +85,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Trivy resolves parent POMs/BOMs on its own; from shared runner IPs
+      # Maven Central answers that with 429 Too Many Requests. Populating
+      # ~/.m2 first (cached via setup-java) lets Trivy read them locally.
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Resolve Maven dependencies for Trivy
+        run: |
+          mvn -B -q dependency:resolve -f backend/pom.xml
+          mvn -B -q dependency:resolve -f keycloak/extensions/pom.xml
+
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@master
         with:
