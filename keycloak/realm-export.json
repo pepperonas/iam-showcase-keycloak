@@ -141,6 +141,7 @@
       },
       "defaultClientScopes": [
         "basic",
+        "kc-admin-api",
         "web-origins",
         "acr",
         "profile",
