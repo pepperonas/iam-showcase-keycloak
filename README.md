@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/pepperonas/iam-showcase-keycloak/actions/workflows/ci.yml/badge.svg)](https://github.com/pepperonas/iam-showcase-keycloak/actions/workflows/ci.yml)
 ![Java 21](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot 3.3](https://img.shields.io/badge/Spring%20Boot-3.3-green)
+![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1-green)
 ![React 18](https://img.shields.io/badge/React-18-blue)
 ![Keycloak 24](https://img.shields.io/badge/Keycloak-24-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
@@ -553,7 +553,7 @@ helm template iam-showcase helm/iam-showcase/
 ## Tech-Stack
 
 - **Identity Provider:** Keycloak 24 (OAuth2, OIDC, SAML2, TOTP)
-- **Backend:** Spring Boot 3.3, Java 21, Spring Security OAuth2 Resource Server
+- **Backend:** Spring Boot 4.1 (Spring Framework 7), Java 21, Spring Security OAuth2 Resource Server
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Material Design 3
 - **Datenbank:** PostgreSQL 16
 - **Infrastruktur:** Docker Compose, Helm Charts, GitHub Actions
