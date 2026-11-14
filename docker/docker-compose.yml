@@ -55,7 +55,7 @@ services:
       KC_HOSTNAME: ${KC_HOSTNAME:-http://localhost:8180}
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       JAVA_OPTS_KC_HEAP: "-Xms96m -Xmx288m -XX:MaxMetaspaceSize=192m"
-      JAVA_OPTS_APPEND: "-XX:+UseSerialGC -Xss512k"
+      JAVA_OPTS_APPEND: "-Xss512k"
     depends_on:
       postgres:
         condition: service_healthy
