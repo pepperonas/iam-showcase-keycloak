@@ -11,7 +11,9 @@
 
 Ein vollstaendiges Identity & Access Management Showcase-Projekt, das Keycloak-basiertes SSO, OAuth2/OIDC, SAML2, RBAC und 2FA (TOTP) in einer modernen Architektur demonstriert.
 
-![Login-Seite mit Demo-Credentials](docs/screenshots/login-page.png)
+Die Demo ist als Lehrstueck gebaut: Jede Seite der App erklaert in Alltagssprache, was sie zeigt und was man dort ausprobieren kann. Vorwissen zu OIDC, JWT oder RBAC ist nicht noetig.
+
+![Startseite: Erklaerung in drei Schritten, Demo-Konten und Technik](docs/screenshots/login-page.png)
 
 ## Inhaltsverzeichnis
 
@@ -416,7 +418,7 @@ Verifizierter Ablauf:
 - **Framework:** Vitest
 - **DOM Testing:** @testing-library/react
 - **Mocking:** vi.mock fuer OIDC-Context
-- **Test-Dateien:** `App.test.tsx`, `PermissionMatrix.test.tsx`, `TokenInspector.test.tsx`
+- **Test-Dateien:** `App.test.tsx`, `PermissionMatrix.test.tsx`
 
 ### Ausfuehrung
 
@@ -528,13 +530,32 @@ helm template iam-showcase helm/iam-showcase/
 
 ### Frontend Showcase-Features
 
-1. **Token Inspector** - JWT visuell decodiert, Expiry-Countdown, Copy-Button
-2. **Role Switcher** - One-Click User-Wechsel zwischen 4 Demo-Profilen
-3. **API Tester** - Interaktiver Endpoint-Tester mit Batch-Test und visueller Berechtigungsanzeige
-4. **Permission Matrix** - Endpoint x Rolle Grid (gruen/rot)
-5. **OIDC Flow Diagram** - 10-Schritt Sequenzdiagramm des Auth-Flows
-6. **User Management** - CRUD-Interface mit rollenbasierter UI
-7. **Admin Dashboard** - Statistiken + Audit-Log
+Die App richtet sich auch an Leser mit mittlerem IT-Wissen. Deshalb gilt fuer alle Seiten:
+
+- **Einleitung je Seite** - ein Kasten "Was sehe ich hier?" erklaert den Inhalt ohne Fachjargon, darunter stehen Vorschlaege zum Ausprobieren (`components/common/PageIntro.tsx`)
+- **Startseite** - der Ablauf in drei Schritten (Anmelden bei Keycloak, Token als Ausweis, API prueft jede Anfrage), vier Demo-Konten mit einem Satz dazu, was sie duerfen, und die Aufgabe jedes Technik-Bausteins
+- **Rollen mit Erklaerung** - jede Rolle traegt einen Kurztext (`ROLE_INFO` in `types/auth.ts`), sichtbar im Dashboard und als Tooltip an jedem Rollen-Badge
+- **Hinweis auf ausgeblendete Menuepunkte** - die Seitenleiste sagt, wenn dem Konto Rollen fuer weitere Seiten fehlen
+- **Link zum Quellcode** - auf der Startseite, in der Seitenleiste, im Seitenfuss und im Dashboard (`config/links.ts`)
+
+Die Seiten im Einzelnen:
+
+1. **Dashboard** - eigene Rollen mit Erklaerung, daraus abgeleitet "Was Sie damit duerfen", Glossar (IAM, Keycloak, Token/JWT, RBAC, OIDC, PKCE)
+2. **Token Inspector** - JWT visuell decodiert, jedes Feld erklaert, Expiry-Countdown, Copy-Button
+3. **API Tester** - Interaktiver Endpoint-Tester mit Batch-Test, Erklaerung der Statuscodes 200/401/403
+4. **Permission Matrix** - Endpoint x Rolle Grid (gruen/rot) mit Leseanleitung
+5. **OIDC Flow Diagram** - 10 Schritte, je Fachbegriff plus Bedeutung in einem Satz, dazu PKCE und 2FA erklaert
+6. **Role Switcher** - One-Click User-Wechsel zwischen 4 Demo-Profilen
+7. **User Management** - Benutzerliste aus Keycloak mit rollenbasierter UI
+8. **Admin Dashboard** - Statistiken + Audit-Log
+
+#### Dashboard
+
+![Dashboard - Rollen, Rechte und Glossar](docs/screenshots/dashboard.png)
+
+#### OIDC Flow
+
+![OIDC Flow - zehn Schritte mit Erklaerung](docs/screenshots/oidc-flow.png)
 
 #### API Tester: Admin (alle Endpoints erlaubt)
 
