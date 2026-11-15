@@ -9,18 +9,18 @@
 
 **Live Demo:** [https://iam-demo.celox.io](https://iam-demo.celox.io)
 
-Ein vollstaendiges Identity & Access Management Showcase-Projekt, das Keycloak-basiertes SSO, OAuth2/OIDC, SAML2, RBAC und 2FA (TOTP) in einer modernen Architektur demonstriert.
+Ein vollständiges Identity & Access Management Showcase-Projekt, das Keycloak-basiertes SSO, OAuth2/OIDC, SAML2, RBAC und 2FA (TOTP) in einer modernen Architektur demonstriert.
 
-Die Demo ist als Lehrstueck gebaut: Jede Seite der App erklaert in Alltagssprache, was sie zeigt und was man dort ausprobieren kann. Vorwissen zu OIDC, JWT oder RBAC ist nicht noetig.
+Die Demo ist als Lehrstück gebaut: Jede Seite der App erklärt in Alltagssprache, was sie zeigt und was man dort ausprobieren kann. Vorwissen zu OIDC, JWT oder RBAC ist nicht nötig.
 
-![Startseite: Erklaerung in drei Schritten, Demo-Konten und Technik](docs/screenshots/login-page.png)
+![Startseite: Erklärung in drei Schritten, Demo-Konten und Technik](docs/screenshots/login-page.png)
 
 ## Inhaltsverzeichnis
 
 - [Demo-Credentials](#demo-credentials)
 - [Quick Start](#quick-start)
 - [Architektur](#architektur)
-  - [Uebersicht](#uebersicht)
+  - [Übersicht](#übersicht)
   - [Komponenten](#komponenten)
   - [Datenfluss: Login](#datenfluss-login)
   - [Datenfluss: API-Call](#datenfluss-api-call)
@@ -35,7 +35,7 @@ Die Demo ist als Lehrstueck gebaut: Jede Seite der App erklaert in Alltagssprach
   - [Password Policy](#password-policy)
   - [Audit-Logging](#audit-logging)
 - [API-Referenz](#api-referenz)
-  - [Oeffentliche Endpoints](#oeffentliche-endpoints)
+  - [Öffentliche Endpoints](#öffentliche-endpoints)
   - [Token Endpoints](#token-endpoints)
   - [User Management](#user-management)
   - [Rollen](#rollen)
@@ -51,7 +51,7 @@ Die Demo ist als Lehrstueck gebaut: Jede Seite der App erklaert in Alltagssprach
 - [Testing](#testing)
   - [Backend (Java/Spring Boot)](#backend-javaspring-boot)
   - [Frontend (React/TypeScript)](#frontend-reacttypescript)
-  - [Ausfuehrung](#ausfuehrung)
+  - [Ausführung](#ausführung)
 - [Deployment](#deployment)
   - [Lokale Entwicklung (Docker Compose)](#lokale-entwicklung-docker-compose)
   - [VPS Deployment (Produktion)](#vps-deployment-produktion)
@@ -92,7 +92,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 ## Architektur
 
-### Uebersicht
+### Übersicht
 
 ```
                     +-------------------+
@@ -118,7 +118,7 @@ docker compose -f docker/docker-compose.yml up -d
     +--------------------+       +--------------------+
 ```
 
-Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
+Eine PostgreSQL-Instanz trägt beide Datenbanken (Keycloak und Anwendung).
 
 ```
 ```
@@ -129,7 +129,7 @@ Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
 - **Realm:** `iam-showcase`
 - **Protokolle:** OIDC, SAML 2.0
 - **Features:** SSO, RBAC, TOTP/2FA, Brute-Force-Schutz
-- **Custom SPI:** Audit Event Listener fuer strukturiertes Logging
+- **Custom SPI:** Audit Event Listener für strukturiertes Logging
 
 **Spring Boot Backend (Resource Server)**
 - **Security:** OAuth2 Resource Server mit JWT-Validierung
@@ -150,7 +150,7 @@ Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
 4. User authentifiziert sich (Passwort + optional TOTP)
 5. Keycloak redirectet mit Authorization Code
 6. SPA tauscht Code + `code_verifier` gegen Tokens
-7. Access Token (JWT) wird fuer API-Calls verwendet
+7. Access Token (JWT) wird für API-Calls verwendet
 
 ### Datenfluss: API-Call
 
@@ -158,7 +158,7 @@ Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
 2. Spring Security validiert JWT-Signatur via JWKS
 3. `KeycloakJwtConverter` extrahiert Rollen
 4. RBAC-Check gegen `SecurityConfig`
-5. Response wird zurueckgegeben
+5. Response wird zurückgegeben
 
 ### Deployment-Optionen
 
@@ -239,7 +239,7 @@ Eine PostgreSQL-Instanz traegt beide Datenbanken (Keycloak und Anwendung).
 
 - Custom Keycloak SPI Event Listener
 - Strukturiertes JSON-Logging aller Auth-Events
-- Anwendungsseitiges Audit-Log fuer API-Zugriffe
+- Anwendungsseitiges Audit-Log für API-Zugriffe
 
 ---
 
@@ -249,7 +249,7 @@ Basis-URL: `http://localhost:8080/api/v1`
 
 Swagger UI: `http://localhost:8080/swagger-ui.html`
 
-### Oeffentliche Endpoints
+### Öffentliche Endpoints
 
 **GET /public/health** - Health Check, kein Token erforderlich.
 ```bash
@@ -292,7 +292,7 @@ curl -X POST -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/js
 
 **PUT /users/{id}** - Benutzer aktualisieren. Rolle: `api-write`
 
-**DELETE /users/{id}** - Benutzer loeschen. Rolle: `api-admin`
+**DELETE /users/{id}** - Benutzer löschen. Rolle: `api-admin`
 
 ### Rollen
 
@@ -367,14 +367,14 @@ Keycloak sperrt Accounts nach wiederholten Fehlversuchen automatisch:
 | `failureFactor` | 5 | Fehlversuche bis zur Sperre |
 | `waitIncrementSeconds` | 60 | Sperrdauer steigt pro Lockout um 60s |
 | `maxFailureWaitSeconds` | 900 | Maximale Sperrdauer (15 Min) |
-| `permanentLockout` | false | Sperre ist temporaer, nicht dauerhaft |
+| `permanentLockout` | false | Sperre ist temporär, nicht dauerhaft |
 
-**Wichtig - Account Enumeration Prevention:** Keycloak gibt bei gesperrten Accounts absichtlich die **gleiche Fehlermeldung** zurueck wie bei falschen Credentials (`Invalid user credentials`). Der HTTP-Statuscode bleibt `401`. Dieses Verhalten ist ein Sicherheitsfeature - ein Angreifer kann nicht erkennen, ob ein Account existiert, gesperrt ist oder das Passwort falsch war.
+**Wichtig - Account Enumeration Prevention:** Keycloak gibt bei gesperrten Accounts absichtlich die **gleiche Fehlermeldung** zurück wie bei falschen Credentials (`Invalid user credentials`). Der HTTP-Statuscode bleibt `401`. Dieses Verhalten ist ein Sicherheitsfeature - ein Angreifer kann nicht erkennen, ob ein Account existiert, gesperrt ist oder das Passwort falsch war.
 
-Die Sperre laesst sich **nicht** durch die API-Antwort erkennen, sondern nur ueber die Keycloak Admin API:
+Die Sperre lässt sich **nicht** durch die API-Antwort erkennen, sondern nur über die Keycloak Admin API:
 
 ```bash
-# Brute-Force-Status eines Users pruefen (Admin-Token erforderlich)
+# Brute-Force-Status eines Users prüfen (Admin-Token erforderlich)
 GET /admin/realms/iam-showcase/attack-detection/brute-force/users/{userId}
 # -> { "disabled": true, "numFailures": 5, ... }
 
@@ -417,10 +417,10 @@ Verifizierter Ablauf:
 
 - **Framework:** Vitest
 - **DOM Testing:** @testing-library/react
-- **Mocking:** vi.mock fuer OIDC-Context
+- **Mocking:** vi.mock für OIDC-Context
 - **Test-Dateien:** `App.test.tsx`, `PermissionMatrix.test.tsx`
 
-### Ausfuehrung
+### Ausführung
 
 ```bash
 # Backend Tests
@@ -443,7 +443,7 @@ mvn clean verify && cd ../frontend && npm test
 # Alle Services starten
 docker compose -f docker/docker-compose.yml up -d
 
-# Status pruefen
+# Status prüfen
 docker compose -f docker/docker-compose.yml ps
 
 # Logs anzeigen
@@ -467,26 +467,26 @@ nur noch und startet sie.
 
 **Voraussetzungen:**
 - VPS mit Docker + Docker Compose und Nginx als Reverse Proxy
-  (`infrastructure/nginx/`, Zertifikat ueber `scripts/setup-ssl.sh`)
+  (`infrastructure/nginx/`, Zertifikat über `scripts/setup-ssl.sh`)
 - DNS: `iam-demo.celox.io` + `auth.iam-demo.celox.io` -> VPS IP
-- SSH-Zugang mit Schluessel, Repository unter `/opt/iam-showcase-keycloak`
+- SSH-Zugang mit Schlüssel, Repository unter `/opt/iam-showcase-keycloak`
 
 ```bash
 # Push auf main, CI-Lauf abwarten, dann:
 bash scripts/deploy-vps.sh
 ```
 
-Das Skript legt beim ersten Lauf eine `.env` mit zufaelligen Passwoertern auf
+Das Skript legt beim ersten Lauf eine `.env` mit zufälligen Passwörtern auf
 dem Server an (Keycloak-Admin, Datenbanken, Client-Secret des Backends).
 
 **Ressourcen:** Jeder Container hat eine feste Speicher- und CPU-Grenze
-(`docker/docker-compose.yml`), zusammen hoechstens 1,2 GB RAM und 2,5 Kerne:
+(`docker/docker-compose.yml`), zusammen höchstens 1,25 GB RAM und 2,5 Kerne:
 
 | Container | RAM-Grenze | CPU-Grenze | Massnahme |
 |-----------|-----------|-----------|-----------|
 | Keycloak | 640 MB | 1,0 | optimierter Build (`start --optimized`), lokaler Cache, Heap 288 MB |
 | Backend | 448 MB | 0,75 | Heap 128 MB, Serial GC, kleine Thread- und Verbindungspools |
-| PostgreSQL | 128 MB | 0,5 | eine Instanz fuer beide Datenbanken, `shared_buffers` 24 MB |
+| PostgreSQL | 128 MB | 0,5 | eine Instanz für beide Datenbanken, `shared_buffers` 24 MB |
 | Frontend (nginx) | 32 MB | 0,25 | statische Dateien |
 
 ### Kubernetes (Helm)
@@ -498,7 +498,7 @@ helm install iam-showcase helm/iam-showcase/ -n iam-showcase --create-namespace
 # Produktion
 helm install iam-showcase helm/iam-showcase/ -f helm/iam-showcase/values-prod.yaml
 
-# Lint pruefen
+# Lint prüfen
 helm lint helm/iam-showcase/
 
 # Template rendern
@@ -530,21 +530,21 @@ helm template iam-showcase helm/iam-showcase/
 
 ### Frontend Showcase-Features
 
-Die App richtet sich auch an Leser mit mittlerem IT-Wissen. Deshalb gilt fuer alle Seiten:
+Die App richtet sich auch an Leser mit mittlerem IT-Wissen. Deshalb gilt für alle Seiten:
 
-- **Einleitung je Seite** - ein Kasten "Was sehe ich hier?" erklaert den Inhalt ohne Fachjargon, darunter stehen Vorschlaege zum Ausprobieren (`components/common/PageIntro.tsx`)
-- **Startseite** - der Ablauf in drei Schritten (Anmelden bei Keycloak, Token als Ausweis, API prueft jede Anfrage), vier Demo-Konten mit einem Satz dazu, was sie duerfen, und die Aufgabe jedes Technik-Bausteins
-- **Rollen mit Erklaerung** - jede Rolle traegt einen Kurztext (`ROLE_INFO` in `types/auth.ts`), sichtbar im Dashboard und als Tooltip an jedem Rollen-Badge
-- **Hinweis auf ausgeblendete Menuepunkte** - die Seitenleiste sagt, wenn dem Konto Rollen fuer weitere Seiten fehlen
-- **Link zum Quellcode** - auf der Startseite, in der Seitenleiste, im Seitenfuss und im Dashboard (`config/links.ts`)
+- **Einleitung je Seite** - ein Kasten "Was sehe ich hier?" erklärt den Inhalt ohne Fachjargon, darunter stehen Vorschläge zum Ausprobieren (`components/common/PageIntro.tsx`)
+- **Startseite** - der Ablauf in drei Schritten (Anmelden bei Keycloak, Token als Ausweis, API prüft jede Anfrage), vier Demo-Konten mit einem Satz dazu, was sie dürfen, und die Aufgabe jedes Technik-Bausteins
+- **Rollen mit Erklärung** - jede Rolle trägt einen Kurztext (`ROLE_INFO` in `types/auth.ts`), sichtbar im Dashboard und als Tooltip an jedem Rollen-Badge
+- **Hinweis auf ausgeblendete Menüpunkte** - die Seitenleiste sagt, wenn dem Konto Rollen für weitere Seiten fehlen
+- **Link zum Quellcode** - auf der Startseite, in der Seitenleiste, im Seitenfuß und im Dashboard (`config/links.ts`)
 
 Die Seiten im Einzelnen:
 
-1. **Dashboard** - eigene Rollen mit Erklaerung, daraus abgeleitet "Was Sie damit duerfen", Glossar (IAM, Keycloak, Token/JWT, RBAC, OIDC, PKCE)
-2. **Token Inspector** - JWT visuell decodiert, jedes Feld erklaert, Expiry-Countdown, Copy-Button
-3. **API Tester** - Interaktiver Endpoint-Tester mit Batch-Test, Erklaerung der Statuscodes 200/401/403
-4. **Permission Matrix** - Endpoint x Rolle Grid (gruen/rot) mit Leseanleitung
-5. **OIDC Flow Diagram** - 10 Schritte, je Fachbegriff plus Bedeutung in einem Satz, dazu PKCE und 2FA erklaert
+1. **Dashboard** - eigene Rollen mit Erklärung, daraus abgeleitet "Was Sie damit dürfen", Glossar (IAM, Keycloak, Token/JWT, RBAC, OIDC, PKCE)
+2. **Token Inspector** - JWT visuell decodiert, jedes Feld erklärt, Expiry-Countdown, Copy-Button
+3. **API Tester** - Interaktiver Endpoint-Tester mit Batch-Test, Erklärung der Statuscodes 200/401/403
+4. **Permission Matrix** - Endpoint x Rolle Grid (grün/rot) mit Leseanleitung
+5. **OIDC Flow Diagram** - 10 Schritte, je Fachbegriff plus Bedeutung in einem Satz, dazu PKCE und 2FA erklärt
 6. **Role Switcher** - One-Click User-Wechsel zwischen 4 Demo-Profilen
 7. **User Management** - Benutzerliste aus Keycloak mit rollenbasierter UI
 8. **Admin Dashboard** - Statistiken + Audit-Log
@@ -555,13 +555,13 @@ Die Seiten im Einzelnen:
 
 #### OIDC Flow
 
-![OIDC Flow - zehn Schritte mit Erklaerung](docs/screenshots/oidc-flow.png)
+![OIDC Flow - zehn Schritte mit Erklärung](docs/screenshots/oidc-flow.png)
 
 #### API Tester: Admin (alle Endpoints erlaubt)
 
-![API Tester - Admin: alle 11 Endpoints gruen](docs/screenshots/api-tester-admin.png)
+![API Tester - Admin: alle 11 Endpoints grün](docs/screenshots/api-tester-admin.png)
 
-#### API Tester: User (eingeschraenkte Rechte)
+#### API Tester: User (eingeschränkte Rechte)
 
 ![API Tester - User: POST/DELETE/Admin gesperrt](docs/screenshots/api-tester-user.png)
 
